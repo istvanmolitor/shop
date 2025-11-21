@@ -1,0 +1,28 @@
+{
+    "name": "istvanmolitor/shop",
+    "description": "Shop modul",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Molitor István",
+            "email": "istvanmolitor@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "istvanmolitor/shop": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Molitor\\Shop\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Molitor\\Shop\\Providers\\ShopServiceProvider"
+            ]
+        }
+    }
+}
