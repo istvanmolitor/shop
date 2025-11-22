@@ -4,8 +4,8 @@ namespace Molitor\Shop\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Blade;
 use Livewire\Livewire;
-use Molitor\Product\Models\ProductCategory;
 use Molitor\Shop\Http\Livewire\CartComponent;
 use Molitor\Shop\Http\Livewire\HeaderCartComponent;
 use Molitor\Shop\Http\Livewire\ProductsListComponent;
@@ -20,29 +20,14 @@ class ShopServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'shop');
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
+        // Register Blade component namespace for package components
+        Blade::componentNamespace('Molitor\\Shop\\View\\Components', 'shop');
+
         // Register Livewire components (package namespace)
         // Alias matches Livewire's auto-generated slug for FQCN-based mounting
         Livewire::component('molitor.shop.http.livewire.cart-component', CartComponent::class);
         Livewire::component('molitor.shop.http.livewire.products-list-component', ProductsListComponent::class);
-                Livewire::component('molitor.shop.http.livewire.header-cart-component', HeaderCartComponent::class);
-
-        // Share product categories with the shop layout (left sidebar)
-        View::composer('shop::layouts.shop', function ($view) {
-            $categories = ProductCategory::query()
-                ->whereNull('parent_id')
-                ->orderBy('left_value')
-                ->get();
-
-            $view->with('shopCategories', $categories);
-
-            // Share cart item count
-            /** @var CartProductRepositoryInterface $cart */
-            $cart = app(CartProductRepositoryInterface::class);
-            $userId = auth()->check() ? (int)auth()->id() : null;
-            $sessionId = session()->getId();
-            $cartCount = $cart->count($userId, $sessionId);
-            $view->with('cartCount', $cartCount);
-        });
+        Livewire::component('molitor.shop.http.livewire.header-cart-component', HeaderCartComponent::class);
     }
 
     public function register()
