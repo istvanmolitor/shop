@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Webshop')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @livewireStyles
-    @stack('head')
-</head>
-<body class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900">
+@extends('shop::layouts.base')
+
+@section('body')
 @include('shop::layouts.includes.header')
 <div class="w-full px-4">
     <div class="py-8">
@@ -48,9 +40,6 @@
             </div>
         </main>
     </div>
-    @include('shop::layouts.includes.footer')
 </div>
-@livewireScripts
-@stack('scripts')
-</body>
-</html>
+@include('shop::layouts.includes.footer')
+@endsection
