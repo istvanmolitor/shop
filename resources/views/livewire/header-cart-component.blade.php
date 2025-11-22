@@ -5,7 +5,7 @@
     <button id="{{ $uid }}-button" type="button" class="inline-flex items-center justify-center rounded-md p-2 text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400" aria-controls="{{ $uid }}-panel" aria-expanded="false">
         <span class="sr-only">Kosár megnyitása</span>
         <span class="relative inline-block">
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25h9.75a2.25 2.25 0 002.2-1.772l1.163-5.813A1.125 1.125 0 0019.512 4.5H5.25m2.25 9.75L5.106 5.272M7.5 14.25L4.875 4.5m0 0H3.375M9 20.25a.75.75 0 100-1.5.75.75 0 000 1.5zm9 0a.75.75 0 100-1.5.75.75 0 000 1.5z" />
             </svg>
             @if($count > 0)
@@ -27,7 +27,7 @@
                             $currency = $product->currency->code ?? '';
                             $subtotal = $price * (int)$item->quantity;
                             $img = optional($product->productImages->first());
-                            $imgUrl = $img?->image_url ?: $img?->image;
+                            $imgUrl = $img?->getSrc();
                         @endphp
                         <div class="py-2 flex items-center gap-3">
                             @if($imgUrl)

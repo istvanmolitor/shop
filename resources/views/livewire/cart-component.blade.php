@@ -22,7 +22,7 @@
                             $currency = $product->currency->code ?? '';
                             $subtotal = $price * (int)$item->quantity;
                             $img = optional($product->productImages->first());
-                            $imgUrl = $img?->image_url ?: $img?->image;
+                            $imgUrl = $img?->getSrc();
                         @endphp
                         <tr class="border-t border-slate-200">
                             <td class="p-3">
