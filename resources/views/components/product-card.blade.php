@@ -6,11 +6,7 @@
 @endphp
 
 <div class="bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
-    <a href="{{ route('shop.products.show', $product) }}" class="relative block pt-[66%] bg-slate-100" aria-label="{{ $product->name }}">
-        @if($imgUrl)
-            <img class="absolute inset-0 w-full h-full object-cover" src="{{ $imgUrl }}" alt="{{ $product->name }}">
-        @endif
-    </a>
+    <x-shop::product-card-image :product="$product" />
     <div class="p-3 grid gap-1.5">
         <a href="{{ route('shop.products.show', $product) }}" class="font-semibold text-slate-900 hover:text-slate-950 no-underline">{{ $product->name }}</a>
         <div class="text-slate-500">SKU: {{ $product->sku }}</div>
