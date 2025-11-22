@@ -19,7 +19,7 @@ class SidebarCategories extends Component
     {
         /** @var ProductCategoryRepositoryInterface $productCategoryRepository */
         $productCategoryRepository = app(ProductCategoryRepositoryInterface::class);
-        $this->shopCategories =  $productCategoryRepository->getAll();
+        $this->shopCategories =  $productCategoryRepository->getRootProductCategories();
     }
 
     /**

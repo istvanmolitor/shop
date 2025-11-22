@@ -4,10 +4,8 @@
             <h2 class="text-base font-semibold text-slate-900 mb-3">Kategóriák</h2>
             @if(isset($shopCategories) && $shopCategories->isNotEmpty())
                 <ul class="space-y-1">
-                    @foreach($shopCategories as $cat)
-                        <li>
-                            <span class="block px-2 py-1.5 rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">{{ $cat->name }}</span>
-                        </li>
+                    @foreach($shopCategories as $category)
+                        @include('shop::components.partials.category-tree', ['category' => $category])
                     @endforeach
                 </ul>
             @else
