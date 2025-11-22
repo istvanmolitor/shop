@@ -1,4 +1,4 @@
-@extends('shop::layouts.shop')
+@extends('shop::layouts.app')
 
 @section('title', 'Megrendeléseim')
 @section('page_title', 'Megrendeléseim')

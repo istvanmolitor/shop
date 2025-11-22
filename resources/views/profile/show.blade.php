@@ -1,4 +1,4 @@
-@extends('shop::layouts.shop')
+@extends('shop::layouts.app')
 
 @section('title', 'Profil – Molitor Shop')
 @section('page_title', 'Profil')

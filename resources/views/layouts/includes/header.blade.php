@@ -1,6 +1,6 @@
 <header>
     <nav class="sticky top-0 z-10 border-b border-slate-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50">
-        <div class="w-full px-4 py-3 flex items-center justify-between gap-4 relative">
+        <div class="w-full px-4 py-3 max-w-7xl mx-auto flex items-center justify-between gap-4 relative">
             @include('shop::layouts.includes.logo')
 
             <div class="hidden md:block flex-1">

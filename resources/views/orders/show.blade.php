@@ -1,4 +1,4 @@
-@extends('shop::layouts.shop')
+@extends('shop::layouts.app')
 
 @section('title', 'Megrendelés részletei')
 @section('page_title', 'Megrendelés ' . $order->code)
