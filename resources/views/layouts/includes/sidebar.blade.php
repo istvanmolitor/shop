@@ -1,3 +1,3 @@
 <aside class="lg:col-span-1">
-    <x-shop::categories-sidebar />
+    <x-shop::sidebar-categories />
 </aside>

@@ -6,7 +6,7 @@ use Illuminate\View\Component;
 use Illuminate\Contracts\View\View as ViewContract;
 use Molitor\Product\Repositories\ProductCategoryRepositoryInterface;
 
-class CategoriesSidebar extends Component
+class SidebarCategories extends Component
 {
     /**
      * The root categories to display in the sidebar.
@@ -27,7 +27,7 @@ class CategoriesSidebar extends Component
      */
     public function render(): ViewContract
     {
-        return view('shop::components.categories-sidebar', [
+        return view('shop::components.sidebar-categories', [
             'shopCategories' => $this->shopCategories,
         ]);
     }
