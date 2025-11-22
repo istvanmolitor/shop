@@ -9,39 +9,7 @@
     @stack('head')
 </head>
 <body class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900">
-<nav class="sticky top-0 z-10 border-b border-slate-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50">
-    <div class="w-full px-4 py-3 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-2 font-bold tracking-tight text-slate-900">
-            <span class="size-7 rounded-md bg-gradient-to-br from-blue-600 to-amber-500 shadow-md shadow-blue-500/30 inline-block"></span>
-            <a class="hover:opacity-90" href="{{ route('shop.products.index') }}">Molitor Shop</a>
-        </div>
-
-        <div class="flex-1 max-w-xl">
-            <form method="get" action="{{ route('shop.products.index') }}" class="flex items-center gap-2">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Keresés terméknév, cikkszám..."
-                       class="w-full rounded-md border border-slate-300 px-3 py-2" />
-                <button type="submit" class="rounded-md bg-slate-900 text-white px-3 py-2">Keresés</button>
-            </form>
-        </div>
-
-        <div class="text-sm flex items-center gap-4">
-            <a class="text-slate-700 hover:text-slate-900" href="{{ route('shop.products.index') }}">Termékek</a>
-            <a class="text-slate-700 hover:text-slate-900" href="{{ route('shop.cart.index') }}">Kosár @isset($cartCount)<span class="ml-1 inline-flex items-center justify-center min-w-5 h-5 px-1 text-xs rounded-full bg-slate-900 text-white">{{ $cartCount }}</span>@endisset</a>
-            @auth
-                <a class="text-slate-700 hover:text-slate-900" href="{{ route('shop.orders.index') }}">Megrendeléseim</a>
-                <a class="text-slate-700 hover:text-slate-900" href="{{ route('shop.profile.show') }}">Profil</a>
-                <form method="POST" action="{{ route('shop.logout') }}" class="inline-flex items-center gap-2">
-                    @csrf
-                    <span class="text-slate-700">{{ auth()->user()->name }}</span>
-                    <button type="submit" class="text-slate-700 hover:text-slate-900">Kijelentkezés</button>
-                </form>
-            @else
-                <a class="text-slate-700 hover:text-slate-900" href="{{ route('shop.login') }}">Belépés</a>
-                <a class="text-slate-700 hover:text-slate-900" href="{{ route('shop.register') }}">Regisztráció</a>
-            @endauth
-        </div>
-    </div>
-</nav>
+@include('shop::layouts.includes.header')
 <div class="w-full px-4">
     <div class="py-8">
         <h1 class="m-0 text-2xl font-semibold">@yield('page_title', 'Webshop')</h1>
