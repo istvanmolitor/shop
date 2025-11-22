@@ -5,6 +5,7 @@ use Molitor\Shop\Http\Controllers\ShopProductController;
 use Molitor\Shop\Http\Controllers\CartController;
 use Molitor\Shop\Http\Controllers\ShopAuthController;
 use Molitor\Shop\Http\Controllers\ShopProfileController;
+use Molitor\Shop\Http\Controllers\ShopCheckoutController;
 
 Route::middleware('web')->group(function () {
     Route::get('/shop/products', [ShopProductController::class, 'index'])->name('shop.products.index');
@@ -21,6 +22,10 @@ Route::middleware('web')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/shop/profile', [ShopProfileController::class, 'show'])->name('shop.profile.show');
         Route::post('/shop/profile', [ShopProfileController::class, 'update'])->name('shop.profile.update');
+
+        // Checkout
+        Route::get('/shop/checkout', [ShopCheckoutController::class, 'show'])->name('shop.checkout.show');
+        Route::post('/shop/checkout', [ShopCheckoutController::class, 'store'])->name('shop.checkout.store');
     });
 
     // Cart
