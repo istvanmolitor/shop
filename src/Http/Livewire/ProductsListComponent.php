@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Molitor\Shop\Http\Livewire;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Molitor\Product\Models\Product;
@@ -15,6 +17,7 @@ class ProductsListComponent extends Component
 
     public string $q = '';
     public int $perPage = 12;
+    public int $page = 1;
 
     protected $queryString = [
         'q' => ['except' => ''],
@@ -23,7 +26,6 @@ class ProductsListComponent extends Component
 
     public function mount(): void
     {
-        // Initialize from current request (when mounted on index page reached via header search)
         $this->q = (string)request()->query('q', '');
     }
 
@@ -32,15 +34,15 @@ class ProductsListComponent extends Component
         $this->resetPage();
     }
 
-    protected function query(): \Illuminate\Database\Eloquent\Builder
+    protected function query(): Builder
     {
         $product = new Product();
         $translationTable = $product->getTranslationTable();
 
         $query = Product::query()
             ->with(['currency', 'productImages'])
-            ->joinTranslation() // joins current language translation table
-            ->selectBase()      // select products.* to avoid ambiguous columns
+            ->joinTranslation()
+            ->selectBase()
             ->orderByDesc('id');
 
         if (trim($this->q) !== '') {
@@ -59,7 +61,7 @@ class ProductsListComponent extends Component
         return $this->query()->paginate($this->perPage);
     }
 
-    public function render()
+    public function render(): View
     {
         return view('shop::livewire.products-list-component', [
             'products' => $this->getProducts(),
