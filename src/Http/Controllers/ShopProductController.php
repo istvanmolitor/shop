@@ -9,13 +9,8 @@ class ShopProductController extends BaseController
 {
     public function index()
     {
-        $products = Product::query()
-            ->with(['currency', 'productImages'])
-            ->orderByDesc('id')
-            ->limit(50)
-            ->get();
-
-        return view('shop::products.index', compact('products'));
+        // Listing is handled by Livewire component; just render the page
+        return view('shop::products.index');
     }
 
     public function show(Product $product)

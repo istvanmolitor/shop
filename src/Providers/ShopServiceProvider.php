@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use Livewire\Livewire;
 use Molitor\Product\Models\ProductCategory;
 use Molitor\Shop\Http\Livewire\CartComponent;
+use Molitor\Shop\Http\Livewire\ProductsListComponent;
 use Molitor\Shop\Repositories\CartProductRepository;
 use Molitor\Shop\Repositories\CartProductRepositoryInterface;
 
@@ -21,6 +22,7 @@ class ShopServiceProvider extends ServiceProvider
         // Register Livewire components (package namespace)
         // Alias matches Livewire's auto-generated slug for FQCN-based mounting
         Livewire::component('molitor.shop.http.livewire.cart-component', CartComponent::class);
+        Livewire::component('molitor.shop.http.livewire.products-list-component', ProductsListComponent::class);
 
         // Share product categories with the shop layout (left sidebar)
         View::composer('shop::layouts.shop', function ($view) {
