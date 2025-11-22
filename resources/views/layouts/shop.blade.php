@@ -48,8 +48,7 @@
             </div>
         </main>
     </div>
-
-    <div class="text-center text-slate-500 text-sm py-8">© {{ date('Y') }} Molitor Shop</div>
+    @include('shop::layouts.includes.footer')
 </div>
 @livewireScripts
 @stack('scripts')
