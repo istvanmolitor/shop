@@ -27,8 +27,14 @@
                         <div class="font-bold text-blue-700">
                             {{ number_format((float)($product->price ?? 0), 2, ',', ' ') }} @if($currency) {{ $currency }} @endif
                         </div>
-                        <div class="pt-1">
+                        <div class="pt-1 flex items-center gap-2">
                             <a class="inline-flex items-center gap-2 border border-blue-600 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 no-underline" href="{{ route('shop.products.show', $product) }}">Megnézem</a>
+                            <form method="post" action="{{ route('shop.cart.store') }}">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="inline-flex items-center gap-2 border border-emerald-600 bg-emerald-600 text-white px-3 py-2 rounded-md hover:bg-emerald-700">Kosárba</button>
+                            </form>
                         </div>
                     </div>
                 </div>
