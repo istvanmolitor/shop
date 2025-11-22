@@ -5,6 +5,8 @@ namespace Molitor\Shop\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Molitor\Product\Models\ProductCategory;
+use Molitor\Shop\Repositories\CartProductRepository;
+use Molitor\Shop\Repositories\CartProductRepositoryInterface;
 
 class ShopServiceProvider extends ServiceProvider
 {
@@ -27,5 +29,6 @@ class ShopServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->app->bind(CartProductRepositoryInterface::class, CartProductRepository::class);
     }
 }
