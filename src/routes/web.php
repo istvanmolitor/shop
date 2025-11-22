@@ -7,10 +7,12 @@ use Molitor\Shop\Http\Controllers\ShopAuthController;
 use Molitor\Shop\Http\Controllers\ShopProfileController;
 use Molitor\Shop\Http\Controllers\ShopCheckoutController;
 use Molitor\Shop\Http\Controllers\ShopOrderController;
+use Molitor\Shop\Http\Controllers\ShopCategoryController;
 
 Route::middleware('web')->group(function () {
     Route::get('/shop/products', [ShopProductController::class, 'index'])->name('shop.products.index');
     Route::get('/shop/products/{product:slug}', [ShopProductController::class, 'show'])->name('shop.products.show');
+    Route::get('/shop/categories/{productCategory:slug}', [ShopCategoryController::class, 'show'])->name('shop.categories.show');
 
     // Auth
     Route::get('/shop/login', [ShopAuthController::class, 'showLogin'])->name('shop.login');

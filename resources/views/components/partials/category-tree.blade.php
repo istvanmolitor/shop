@@ -1,5 +1,5 @@
 <li>
-    <span class="block px-2 py-1.5 rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">{{ $category->name }}</span>
+    <a href="{{ route('shop.categories.show', $category) }}" class="block px-2 py-1.5 rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">{{ $category->name }}</a>
 
     @php($children = $category->productCategories)
     @if($children && $children->isNotEmpty())

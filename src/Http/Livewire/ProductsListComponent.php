@@ -18,15 +18,17 @@ class ProductsListComponent extends Component
     public string $q = '';
     public int $perPage = 12;
     public int $page = 1;
+    public ?int $categoryId = null;
 
     protected $queryString = [
         'q' => ['except' => ''],
         'page' => ['except' => 1],
     ];
 
-    public function mount(): void
+    public function mount(?int $categoryId = null): void
     {
         $this->q = (string)request()->query('q', '');
+        $this->categoryId = $categoryId;
     }
 
     public function updatingQ(): void
@@ -44,6 +46,13 @@ class ProductsListComponent extends Component
             ->joinTranslation()
             ->selectBase()
             ->orderByDesc('id');
+
+        if ($this->categoryId) {
+            $categoryId = $this->categoryId;
+            $query->whereHas('productCategories', function ($q) use ($categoryId) {
+                $q->where('product_categories.id', $categoryId);
+            });
+        }
 
         if (trim($this->q) !== '') {
             $term = '%' . str_replace(['%', '_'], ['\\%', '\\_'], trim($this->q)) . '%';
