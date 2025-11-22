@@ -1,7 +1,7 @@
 @props(['product'])
 @php
-    $img = optional($product->productImages->first());
-    $imgUrl = $img?->image_url ?: $img?->image;
+    $img = $product->mainImage;
+    $imgUrl = $img?->getSrc();
 @endphp
 
 <a href="{{ route('shop.products.show', $product) }}" class="relative block pt-[66%] bg-slate-100" aria-label="{{ $product->name }}">

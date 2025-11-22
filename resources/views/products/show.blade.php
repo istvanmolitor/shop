@@ -2,12 +2,11 @@
 
 @section('title', ($product->name ?? 'Termék') . ' – Molitor Shop')
 @section('page_title', $product->name)
-@section('page_subtitle')ID: {{ $product->id }} • SKU: {{ $product->sku }} • Slug: {{ $product->slug }}@endsection
 
 @section('content')
     @php
         $mainImage = $product->productImages->firstWhere('is_main', true) ?? $product->productImages->first();
-        $mainUrl = $mainImage?->image_url ?: $mainImage?->image;
+        $mainUrl = $mainImage?->getSrc();
     @endphp
 
     <p><a class="inline-flex items-center gap-1 font-medium text-slate-700 hover:text-slate-900 no-underline" href="{{ route('shop.products.index') }}">← Vissza a listához</a></p>
@@ -80,19 +79,6 @@
                 </ul>
             @endif
         </div>
-
-        <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
-            <h2 class="mt-0 text-lg font-semibold">Vonalkódok</h2>
-            @if($product->barcodes->isEmpty())
-                <p class="text-slate-500">Nincs vonalkód megadva.</p>
-            @else
-                <ul class="list-disc pl-5 space-y-1">
-                    @foreach($product->barcodes as $barcode)
-                        <li>{{ $barcode->barcode ?? $barcode->code ?? '' }}</li>
-                    @endforeach
-                </ul>
-            @endif
-        </div>
     </div>
 
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4 mt-4">
@@ -113,19 +99,9 @@
             </ul>
         @endif
     </div>
-
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4 mt-4">
-        <h2 class="mt-0 text-lg font-semibold">Képgaléria</h2>
-        @if($product->productImages->isEmpty())
-            <p class="text-slate-500">Nincsenek képek.</p>
-        @else
-            <div class="flex flex-wrap gap-2">
-                @foreach($product->productImages as $image)
-                    @if($image->image_url || $image->image)
-                        <img class="w-28 h-28 object-cover rounded-md border border-slate-200" src="{{ $image->image_url ?: $image->image }}" alt="{{ $image->name ?? $product->name }}">
-                    @endif
-                @endforeach
-            </div>
-        @endif
-    </div>
+    @if($product->description)
+        <div class="mt-4 prose prose-slate">
+            {{ $product->description }}
+        </div>
+    @endif
 @endsection

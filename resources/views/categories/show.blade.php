@@ -5,6 +5,11 @@
 @section('page_subtitle')Tekintse meg a(z) {{ $category->name }} kategóriában elérhető termékeket @endsection
 
 @section('content')
+    @if($category->description)
+        <div class="mb-8 prose prose-slate max-w-none">
+            {{ $category->description }}
+        </div>
+    @endif
     @php($children = $category->productCategories ?? collect())
     @if($children->isNotEmpty())
         <div class="mb-8">
@@ -22,7 +27,7 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="p-4">
+                        <div class="p-4 text-center">
                             <div class="text-slate-900 font-medium truncate">{{ $child->name }}</div>
                         </div>
                     </a>

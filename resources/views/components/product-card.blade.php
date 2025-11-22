@@ -1,7 +1,5 @@
 @props(['product'])
 @php
-    $img = optional($product->productImages->first());
-    $imgUrl = $img?->image_url ?: $img?->image;
     $currency = $product->currency?->code;
 @endphp
 
