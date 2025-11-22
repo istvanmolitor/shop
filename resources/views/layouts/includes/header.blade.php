@@ -1,7 +1,57 @@
-<nav class="sticky top-0 z-10 border-b border-slate-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50">
-    <div class="w-full px-4 py-3 flex items-center justify-between gap-4">
-        @include('shop::layouts.includes.logo')
-        @include('shop::layouts.includes.search')
-        @include('shop::layouts.includes.main-menu')
-    </div>
-</nav>
+<header>
+    <nav class="sticky top-0 z-10 border-b border-slate-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50">
+        <div class="w-full px-4 py-3 flex items-center justify-between gap-4">
+            @include('shop::layouts.includes.logo')
+
+            <div class="hidden md:block flex-1">
+                @include('shop::layouts.includes.search')
+            </div>
+
+            <div class="hidden md:block">
+                @include('shop::layouts.includes.main-menu')
+            </div>
+
+            <button id="mobile-menu-button" type="button" class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400" aria-controls="mobile-menu" aria-expanded="false">
+                <span class="sr-only">Menü megnyitása</span>
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden hidden border-t border-slate-200">
+            <div class="px-4 py-3 space-y-3">
+                @include('shop::layouts.includes.search')
+                @include('shop::layouts.includes.main-menu')
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        (function(){
+            const btn = document.getElementById('mobile-menu-button');
+            const menu = document.getElementById('mobile-menu');
+            if(!btn || !menu) return;
+            function closeMenu(){
+                menu.classList.add('hidden');
+                btn.setAttribute('aria-expanded','false');
+            }
+            function openMenu(){
+                menu.classList.remove('hidden');
+                btn.setAttribute('aria-expanded','true');
+            }
+            btn.addEventListener('click', function(){
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                if(expanded){ closeMenu(); } else { openMenu(); }
+            });
+            document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeMenu(); } });
+            document.addEventListener('click', function(e){
+                if(!menu.contains(e.target) && !btn.contains(e.target)){
+                    closeMenu();
+                }
+            });
+            // Close on resize to md+
+            window.addEventListener('resize', function(){ if(window.innerWidth >= 768){ closeMenu(); } });
+        })();
+    </script>
+</header>
