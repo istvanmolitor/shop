@@ -19,12 +19,10 @@ class ShopCheckoutController extends BaseController
         $customerRepository = app(CustomerRepositoryInterface::class);
         $customer = $customerRepository->getByUser(Auth::user());
 
-        $customer->load(['invoiceAddress', 'shippingAddress', 'currency']);
-
         return view('shop::checkout.index', [
             'customer' => $customer,
-            'invoiceAddress' => $customer->invoiceAddress,
-            'shippingAddress' => $customer->shippingAddress,
+            'invoiceAddress' => $customer?->invoiceAddress,
+            'shippingAddress' => $customer?->shippingAddress,
         ]);
     }
 
