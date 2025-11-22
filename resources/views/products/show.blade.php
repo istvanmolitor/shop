@@ -30,6 +30,16 @@
                             / {{ $product->productUnit->name }}
                         @endif
                     </div>
+                    <form method="post" action="{{ route('shop.cart.store') }}" class="mt-3 flex items-center gap-2">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <label class="text-sm text-slate-600" for="qty">Mennyiség</label>
+                        <input id="qty" name="quantity" type="number" min="1" value="1" class="w-20 border border-slate-300 rounded-md px-2 py-1">
+                        <button type="submit" class="inline-flex items-center gap-2 border border-emerald-600 bg-emerald-600 text-white px-3 py-2 rounded-md hover:bg-emerald-700">Kosárba</button>
+                    </form>
+                    @if(session('status'))
+                        <div class="text-sm text-emerald-700 mt-2">{{ session('status') }}</div>
+                    @endif
                 </div>
             </div>
         </div>

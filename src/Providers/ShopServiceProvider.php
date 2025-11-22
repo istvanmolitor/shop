@@ -24,6 +24,14 @@ class ShopServiceProvider extends ServiceProvider
                 ->get();
 
             $view->with('shopCategories', $categories);
+
+            // Share cart item count
+            /** @var CartProductRepositoryInterface $cart */
+            $cart = app(CartProductRepositoryInterface::class);
+            $userId = auth()->check() ? (int)auth()->id() : null;
+            $sessionId = session()->getId();
+            $cartCount = $cart->count($userId, $sessionId);
+            $view->with('cartCount', $cartCount);
         });
     }
 

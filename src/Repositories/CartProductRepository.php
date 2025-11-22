@@ -30,7 +30,7 @@ class CartProductRepository implements CartProductRepositoryInterface
     public function getAllByOwner(?int $userId, ?string $sessionId): Collection
     {
         return $this->ownerScope($userId, $sessionId)
-            ->with('product')
+            ->with(['product.currency', 'product.productImages'])
             ->orderByDesc('id')
             ->get();
     }
