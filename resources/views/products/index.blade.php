@@ -1,48 +1,38 @@
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Termékek</title>
-    <style>
-        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #e5e7eb; padding: 8px 10px; text-align: left; }
-        th { background: #f3f4f6; }
-        tr:nth-child(even) { background: #fafafa; }
-        .price { text-align: right; white-space: nowrap; }
-    </style>
-</head>
-<body>
-<h1>Termékek</h1>
-@if($products->isEmpty())
-    <p>Nincs megjeleníthető termék.</p>
-@else
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>SKU</th>
-            <th>Név</th>
-            <th>Ár</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($products as $product)
-            <tr>
-                <td>{{ $product->id }}</td>
-                <td>{{ $product->sku }}</td>
-                <td><a href="{{ route('shop.products.show', $product) }}">{{ $product->name }}</a></td>
-                <td class="price">
-                    {{ number_format((float)($product->price ?? 0), 2, ',', ' ') }}
-                    @if($product->currency)
-                        {{ $product->currency->code }}
-                    @endif
-                </td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
-@endif
-</body>
-</html>
+@extends('shop::layouts.shop')
+
+@section('title', 'Termékek – Molitor Shop')
+@section('page_title', 'Termékek')
+@section('page_subtitle')Válogasson a legfrissebb termékeink közül @endsection
+
+@section('content')
+    @if($products->isEmpty())
+        <p class="muted">Nincs megjeleníthető termék.</p>
+    @else
+        <div class="grid grid-2 grid-3">
+            @foreach($products as $product)
+                @php
+                    $img = optional($product->productImages->first());
+                    $imgUrl = $img?->image_url ?: $img?->image;
+                    $currency = $product->currency?->code;
+                @endphp
+                <div class="card">
+                    <a href="{{ route('shop.products.show', $product) }}" class="thumb" aria-label="{{ $product->name }}">
+                        @if($imgUrl)
+                            <img src="{{ $imgUrl }}" alt="{{ $product->name }}">
+                        @endif
+                    </a>
+                    <div class="body">
+                        <a href="{{ route('shop.products.show', $product) }}" style="font-weight:600; color:inherit; text-decoration:none;">{{ $product->name }}</a>
+                        <div class="muted">SKU: {{ $product->sku }}</div>
+                        <div class="price">
+                            {{ number_format((float)($product->price ?? 0), 2, ',', ' ') }} @if($currency) {{ $currency }} @endif
+                        </div>
+                        <div>
+                            <a class="btn" href="{{ route('shop.products.show', $product) }}">Megnézem</a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+@endsection

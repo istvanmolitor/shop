@@ -10,7 +10,7 @@ class ShopProductController extends BaseController
     public function index()
     {
         $products = Product::query()
-            ->with(['currency'])
+            ->with(['currency', 'productImages'])
             ->orderByDesc('id')
             ->limit(50)
             ->get();
