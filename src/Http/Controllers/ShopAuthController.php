@@ -13,6 +13,7 @@ use Illuminate\Validation\ValidationException;
 use Molitor\Customer\Models\Customer;
 use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
 use Molitor\Language\Repositories\LanguageRepositoryInterface;
+use Molitor\Address\Repositories\AddressRepositoryInterface;
 
 class ShopAuthController extends BaseController
 {
@@ -48,12 +49,21 @@ class ShopAuthController extends BaseController
     public function register(
         Request $request,
         CurrencyRepositoryInterface $currencyRepository,
-        LanguageRepositoryInterface $languageRepository
+        LanguageRepositoryInterface $languageRepository,
+        AddressRepositoryInterface $addressRepository
     ): RedirectResponse {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            // Customer optional fields
+            'customer_name' => ['nullable', 'string', 'max:255'],
+            'invoice_zip_code' => ['nullable', 'string', 'max:32'],
+            'invoice_city' => ['nullable', 'string', 'max:255'],
+            'invoice_address' => ['nullable', 'string', 'max:255'],
+            'shipping_zip_code' => ['nullable', 'string', 'max:32'],
+            'shipping_city' => ['nullable', 'string', 'max:255'],
+            'shipping_address' => ['nullable', 'string', 'max:255'],
         ]);
 
         DB::beginTransaction();
@@ -66,7 +76,7 @@ class ShopAuthController extends BaseController
 
             // Create related customer
             $customer = Customer::create([
-                'name' => $data['name'],
+                'name' => $data['customer_name'] ?: $data['name'],
                 'internal_name' => $data['email'],
                 'is_buyer' => true,
                 'user_id' => $user->id,
@@ -74,6 +84,29 @@ class ShopAuthController extends BaseController
                 'language_id' => $languageRepository->getDefaultId(),
                 // invoice/shipping addresses will be auto-created in model creating hook
             ]);
+
+            // Save addresses if provided
+            $invoiceValues = [
+                'name' => $customer->name,
+                'zip_code' => $data['invoice_zip_code'] ?? '',
+                'city' => $data['invoice_city'] ?? '',
+                'address' => $data['invoice_address'] ?? '',
+            ];
+            $shippingValues = [
+                'name' => $customer->name,
+                'zip_code' => $data['shipping_zip_code'] ?? '',
+                'city' => $data['shipping_city'] ?? '',
+                'address' => $data['shipping_address'] ?? '',
+            ];
+
+            // Load address models and save values
+            $customer->load(['invoiceAddress', 'shippingAddress']);
+            if ($customer->invoiceAddress) {
+                $addressRepository->saveAddress($customer->invoiceAddress, $invoiceValues);
+            }
+            if ($customer->shippingAddress) {
+                $addressRepository->saveAddress($customer->shippingAddress, $shippingValues);
+            }
 
             DB::commit();
         } catch (\Throwable $e) {
