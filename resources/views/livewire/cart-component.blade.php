@@ -19,7 +19,6 @@
                         @php
                             $product = $item->product;
                             $price = (float)($product->price ?? 0);
-                            $currency = $product->currency->code ?? '';
                             $subtotal = $price * (int)$item->quantity;
                             $img = optional($product->productImages->first());
                             $imgUrl = $img?->getSrc();
@@ -36,7 +35,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-3 text-right whitespace-nowrap">{{ number_format($price, 2, ',', ' ') }} {{ $currency }}</td>
+                            <td class="p-3 text-right whitespace-nowrap">{{ $product->getPrice() }}</td>
                             <td class="p-3">
                                 <div class="flex items-center justify-end gap-2">
                                     <button wire:click="decrementQty({{ $item->id }})" class="px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50" aria-label="Csökkentés">−</button>
@@ -45,7 +44,7 @@
                                     <button wire:click="saveQty({{ $item->id }})" class="px-2 py-1 rounded-md border border-blue-600 text-white bg-blue-600 hover:bg-blue-700">Mentés</button>
                                 </div>
                             </td>
-                            <td class="p-3 text-right whitespace-nowrap font-medium">{{ number_format($subtotal, 2, ',', ' ') }} {{ $currency }}</td>
+                            <td class="p-3 text-right whitespace-nowrap font-medium">eeeeee</td>
                             <td class="p-3 text-right">
                                 <button wire:click="removeItem({{ $item->id }})" class="px-3 py-1.5 rounded-md border border-rose-600 text-white bg-rose-600 hover:bg-rose-700">Törlés</button>
                             </td>
@@ -55,7 +54,7 @@
                 <tfoot>
                     <tr class="bg-slate-50 border-t border-slate-200">
                         <td class="p-3" colspan="3"><span class="font-semibold">Végösszeg</span></td>
-                        <td class="p-3 text-right font-bold" colspan="2">{{ number_format($total, 2, ',', ' ') }}</td>
+                        <td class="p-3 text-right font-bold" colspan="2">pppppp</td>
                     </tr>
                 </tfoot>
             </table>

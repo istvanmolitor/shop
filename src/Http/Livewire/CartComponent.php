@@ -7,6 +7,7 @@ namespace Molitor\Shop\Http\Livewire;
 use Livewire\Component;
 use Molitor\Shop\Repositories\CartProductRepositoryInterface;
 use Molitor\Shop\Models\CartProduct;
+use Molitor\Shop\Services\Owner;
 
 class CartComponent extends Component
 {
@@ -27,17 +28,9 @@ class CartComponent extends Component
         $this->refreshItems();
     }
 
-    protected function owner(): array
-    {
-        $userId = auth()->check() ? (int)auth()->id() : null;
-        $sessionId = session()->getId();
-        return [$userId, $sessionId];
-    }
-
     protected function refreshItems(): void
     {
-        [$userId, $sessionId] = $this->owner();
-        $this->items = $this->cart->getAllByOwner($userId, $sessionId);
+        $this->items = $this->cart->getAllByOwner(new Owner());
         $this->total = 0.0;
         $this->qty = [];
         foreach ($this->items as $item) {
@@ -85,13 +78,10 @@ class CartComponent extends Component
         $this->dispatch('cart-updated');
     }
 
-    protected function findOwnedItem(int $itemId): ?CartProduct
+    protected function findOwnedItem(int $itemId): CartProduct|int
     {
-        [$userId, $sessionId] = $this->owner();
         return CartProduct::query()
             ->where('id', $itemId)
-            ->when($userId, fn($q) => $q->where('user_id', $userId))
-            ->when(!$userId, fn($q) => $q->where('session_id', $sessionId))
             ->first();
     }
 

@@ -21,10 +21,7 @@
                 </div>
                 <div class="p-4">
                     <div class="font-bold text-blue-700">
-                        {{ number_format((float)($product->price ?? 0), 2, ',', ' ') }}
-                        @if($product->currency)
-                            {{ $product->currency->code }}
-                        @endif
+                        {{ $product->getPrice() }}
                         @if($product->productUnit)
                             / {{ $product->productUnit->name }}
                         @endif

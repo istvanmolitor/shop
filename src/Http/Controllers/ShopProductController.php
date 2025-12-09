@@ -16,7 +16,6 @@ class ShopProductController extends BaseController
     public function show(Product $product)
     {
         $product->load([
-            'currency',
             'productUnit',
             'productImages',
             'productAttributes.productFieldOption.productField',

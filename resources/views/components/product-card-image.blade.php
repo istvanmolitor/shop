@@ -1,8 +1,3 @@
-@props(['product'])
-@php
-    $img = $product->mainImage;
-    $imgUrl = $img?->getSrc();
-@endphp
 
 <a href="{{ route('shop.products.show', $product) }}" class="relative block pt-[66%] bg-slate-100" aria-label="{{ $product->name }}">
     @if($imgUrl)

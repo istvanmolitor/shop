@@ -1,7 +1,3 @@
-@props(['product'])
-@php
-    $currency = $product->currency?->code;
-@endphp
 
 <div class="bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
     <x-shop::product-card-image :product="$product" />
@@ -9,7 +5,7 @@
         <a href="{{ route('shop.products.show', $product) }}" class="font-semibold text-slate-900 hover:text-slate-950 no-underline">{{ $product->name }}</a>
         <div class="text-slate-500">SKU: {{ $product->sku }}</div>
         <div class="font-bold text-blue-700">
-            {{ number_format((float)($product->price ?? 0), 2, ',', ' ') }} @if($currency) {{ $currency }} @endif
+            {{ $product->getPrice() }}
         </div>
         <div class="pt-1 flex items-center gap-2">
             <a class="inline-flex items-center gap-2 border border-blue-600 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 no-underline" href="{{ route('shop.products.show', $product) }}">Megnézem</a>

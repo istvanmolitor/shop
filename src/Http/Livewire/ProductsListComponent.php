@@ -42,7 +42,7 @@ class ProductsListComponent extends Component
         $translationTable = $product->getTranslationTable();
 
         $query = Product::query()
-            ->with(['currency', 'productImages'])
+            ->with(['productImages'])
             ->joinTranslation()
             ->selectBase()
             ->orderByDesc('id');

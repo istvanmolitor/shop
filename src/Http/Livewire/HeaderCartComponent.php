@@ -5,46 +5,44 @@ declare(strict_types=1);
 namespace Molitor\Shop\Http\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Molitor\Currency\Services\Price;
+use Molitor\Product\Models\Product;
 use Molitor\Shop\Repositories\CartProductRepositoryInterface;
+use Molitor\Shop\Services\Owner;
 
 class HeaderCartComponent extends Component
 {
-    public int $count = 0;
-    public float $total = 0.0;
-    public $items; // Eloquent Collection (serialized by Livewire)
+    protected $listeners = ['cart-updated' => '$refresh'];
 
-    protected CartProductRepositoryInterface $cart;
-
-    protected $listeners = ['cart-updated' => 'refreshItems'];
-
-    public function boot(CartProductRepositoryInterface $cart): void
+    #[Computed]
+    public function count(): int
     {
-        $this->cart = $cart;
+        $cart = app(CartProductRepositoryInterface::class);
+        $owner = new Owner();
+        return $cart->count($owner);
     }
 
-    public function mount(): void
+    #[Computed]
+    public function items()
     {
-        $this->refreshItems();
+        $cart = app(CartProductRepositoryInterface::class);
+        $owner = new Owner();
+        return $cart->getAllByOwner($owner);
     }
 
-    protected function owner(): array
+    #[Computed]
+    public function total(): Price
     {
-        $userId = auth()->check() ? (int)auth()->id() : null;
-        $sessionId = session()->getId();
-        return [$userId, $sessionId];
-    }
-
-    public function refreshItems(): void
-    {
-        [$userId, $sessionId] = $this->owner();
-        $this->items = $this->cart->getAllByOwner($userId, $sessionId);
-        $this->count = $this->cart->count($userId, $sessionId);
-        $this->total = 0.0;
+        $total = new Price(0, null);
         foreach ($this->items as $item) {
-            $price = (float)($item->product->price ?? 0);
-            $this->total += $price * (int)$item->quantity;
+            /** @var Product $product */
+            $product = $item->product;
+            $price = $product->getPrice();
+            $total = $total->addition($price->multiple($item->quantity));
         }
+        return $total;
     }
 
     public function render(): View
