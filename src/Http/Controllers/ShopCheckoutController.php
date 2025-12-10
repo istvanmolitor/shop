@@ -11,29 +11,48 @@ use Molitor\Customer\Models\Customer;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Order\Models\Order;
 use Molitor\Order\Models\OrderStatus;
+use Molitor\Address\Repositories\CountryRepositoryInterface;
+use Molitor\Order\Repositories\OrderPaymentRepositoryInterface;
+use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
+use Molitor\Address\Models\Address;
+use Molitor\Shop\Http\Requests\CheckoutStoreRequest;
 
 class ShopCheckoutController extends BaseController
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function show(): View
     {
         $customerRepository = app(CustomerRepositoryInterface::class);
         $customer = $customerRepository->getByUser(Auth::user());
+        $customer?->loadMissing(['invoiceAddress', 'shippingAddress']);
+
+        /** @var CountryRepositoryInterface $countryRepository */
+        $countryRepository = app(CountryRepositoryInterface::class);
+        /** @var OrderPaymentRepositoryInterface $paymentRepository */
+        $paymentRepository = app(OrderPaymentRepositoryInterface::class);
+        /** @var OrderShippingRepositoryInterface $shippingRepository */
+        $shippingRepository = app(OrderShippingRepositoryInterface::class);
 
         return view('shop::checkout.index', [
             'customer' => $customer,
             'invoiceAddress' => $customer?->invoiceAddress,
             'shippingAddress' => $customer?->shippingAddress,
+            'countries' => $countryRepository->getAll(),
+            'paymentOptions' => $paymentRepository->getOptions(),
+            'shippingOptions' => $shippingRepository->getOptions(),
         ]);
     }
 
-    public function store(): RedirectResponse
+    public function store(CheckoutStoreRequest $request): RedirectResponse
     {
         $customerRepository = app(CustomerRepositoryInterface::class);
         $customer = $customerRepository->getByUser(Auth::user());
 
-        request()->validate([
-            'comment' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $customer->loadMissing(['invoiceAddress', 'shippingAddress', 'currency']);
 
@@ -43,15 +62,34 @@ class ShopCheckoutController extends BaseController
             $status = OrderStatus::query()->firstOrFail();
         }
 
+        // Update/Create invoice (billing) address on customer
+        /** @var Address $invoiceAddress */
+        $invoiceAddress = $customer->invoiceAddress;
+        $invoiceAddress->fill($validated['billing']);
+        $invoiceAddress->save();
+
+        // Update/Create shipping address on customer
+        $shippingSame = (bool)($validated['shipping_same_as_billing'] ?? false);
+        /** @var Address $shippingAddress */
+        $shippingAddress = $customer->shippingAddress;
+        if ($shippingSame) {
+            $shippingAddress->fill($validated['billing']);
+        } else {
+            $shippingAddress->fill($validated['shipping'] ?? []);
+        }
+        $shippingAddress->save();
+
         /** @var Order $order */
         $order = Order::query()->create([
             'is_closed' => false,
             'customer_id' => $customer->id,
             'currency_id' => $customer->currency_id,
             'order_status_id' => $status->id,
-            'invoice_address_id' => $customer->invoice_address_id,
-            'shipping_address_id' => $customer->shipping_address_id,
-            'comment' => request('comment'),
+            'order_payment_id' => $validated['order_payment_id'],
+            'order_shipping_id' => $validated['order_shipping_id'],
+            'invoice_address_id' => $invoiceAddress->id,
+            'shipping_address_id' => $shippingAddress->id,
+            'comment' => $request->input('comment'),
         ]);
 
         return Redirect::route('shop.products.index')
