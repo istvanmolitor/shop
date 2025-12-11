@@ -23,7 +23,6 @@ class PaymentStepRequest extends FormRequest
             'billing.address' => ['required_without:billing_same_as_shipping', 'string', 'max:255'],
 
             'order_payment_id' => ['required', 'integer', 'exists:order_payments,id'],
-            'comment' => ['nullable', 'string', 'max:2000'],
         ];
     }
 }

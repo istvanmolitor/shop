@@ -43,15 +43,12 @@
         </div>
     </div>
 
-    @if(!empty($data['comment']))
-        <div class="mt-6">
-            <h3 class="font-semibold mb-2">Megjegyzés</h3>
-            <div class="p-4 border rounded text-sm">{{ $data['comment'] }}</div>
-        </div>
-    @endif
-
     <form action="{{ route('shop.checkout.place') }}" method="post" class="mt-6">
         @csrf
+        <div class="mt-2">
+            <label for="comment" class="block text-sm font-medium text-gray-700">Megjegyzés</label>
+            <textarea id="comment" name="comment" rows="3" class="mt-1 block w-full border rounded p-2">{{ old('comment', data_get($data,'comment')) }}</textarea>
+        </div>
         <div class="flex items-center justify-between">
             <a href="{{ route('shop.checkout.payment') }}" class="text-gray-600">Vissza a 2. lépéshez</a>
             <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Megrendelés elküldése</button>

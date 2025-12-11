@@ -174,7 +174,6 @@ class ShopCheckoutController extends BaseController
         }
         $checkout['billing_same_as_shipping'] = $billingSame;
         $checkout['order_payment_id'] = $data['order_payment_id'];
-        $checkout['comment'] = $data['comment'] ?? null;
         session(['checkout' => $checkout]);
         return Redirect::route('shop.checkout.finalize');
     }
@@ -241,7 +240,8 @@ class ShopCheckoutController extends BaseController
             'order_shipping_id' => $checkout['order_shipping_id'],
             'invoice_address_id' => $invoiceAddress->id,
             'shipping_address_id' => $shippingAddress->id,
-            'comment' => $checkout['comment'] ?? null,
+            // Comment will be posted on finalize step; keep backward-compat with any session-stored value
+            'comment' => request()->input('comment', $checkout['comment'] ?? null),
         ]);
 
         // Clear checkout session

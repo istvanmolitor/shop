@@ -70,10 +70,6 @@
             </div>
         </div>
 
-        <div class="mt-6">
-            <label for="comment" class="block text-sm font-medium text-gray-700">Megjegyzés</label>
-            <textarea id="comment" name="comment" rows="3" class="mt-1 block w-full border rounded p-2">{{ old('comment', data_get($session,'comment')) }}</textarea>
-        </div>
 
         <div class="mt-4 flex items-center justify-between">
             <a href="{{ route('shop.checkout.shipping') }}" class="text-gray-600">Vissza az 1. lépéshez</a>
