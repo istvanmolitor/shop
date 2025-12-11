@@ -156,7 +156,9 @@ class ShopCheckoutController extends BaseController
             'customer' => $customer,
             'invoiceAddress' => $customer?->invoiceAddress,
             'countries' => $countryRepository->getAll(),
+            // Keep options for potential uses, but pass full methods to show radio list with prices
             'paymentOptions' => $paymentRepository->getOptions(),
+            'paymentMethods' => $paymentRepository->getAll(),
             'session' => $checkout,
         ]);
     }

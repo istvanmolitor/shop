@@ -2,7 +2,7 @@
 
 @section('title', 'Megrendelés – Számlázás és fizetés')
 @section('page_title', 'Megrendelés – 2/3: Fizetés')
-@section('page_subtitle')Adja meg a számlázási adatait és válassza ki a fizetési módot.@endsection
+@section('page_subtitle')Válassza ki a fizetési módot, majd adja meg a számlázási adatait.@endsection
 
 @section('content')
     @include('shop::components.checkout-steps', ['current' => 3])
@@ -19,6 +19,27 @@
     <form action="{{ route('shop.checkout.payment.store') }}" method="post" class="mt-6">
         @csrf
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="font-semibold mb-2">Fizetési mód</h3>
+                <div class="p-4 border rounded space-y-3">
+                    @php($selectedPaymentId = old('order_payment_id', data_get($session,'order_payment_id')))
+                    @foreach(($paymentMethods ?? []) as $method)
+                        @php($price = $method->getPrice()->exchangeDefault())
+                        <label class="flex items-start gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="order_payment_id" value="{{ $method->id }}" class="mt-1" @checked($selectedPaymentId == $method->id) required>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-medium">{{ $method->name }}</span>
+                                    <span class="font-semibold text-gray-900">{{ $price }}</span>
+                                </div>
+                                @if($method->description)
+                                    <div class="text-sm text-gray-600 mt-1">{!! $method->description !!}</div>
+                                @endif
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
             <div class="md:col-span-2">
                 <h3 class="font-semibold mb-2">Számlázási adatok</h3>
                 <div class="p-4 border rounded space-y-3">
@@ -55,17 +76,6 @@
                             <input type="text" name="billing[address]" value="{{ old('billing.address', data_get($session,'billing.address', $invoiceAddress?->address)) }}" class="mt-1 block w-full border rounded p-2">
                         </div>
                     </div>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-semibold mb-2">Fizetési mód</h3>
-                <div class="p-4 border rounded">
-                    <select name="order_payment_id" class="mt-1 block w-full border rounded p-2" required>
-                        <option value="">– Válasszon –</option>
-                        @foreach($paymentOptions as $id => $label)
-                            <option value="{{ $id }}" @selected(old('order_payment_id', data_get($session,'order_payment_id')) == $id)>{{ $label }}</option>
-                        @endforeach
-                    </select>
                 </div>
             </div>
         </div>
