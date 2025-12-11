@@ -122,7 +122,7 @@ class ShopCheckoutController extends BaseController
             'invoiceAddress' => $customer?->invoiceAddress,
             'shippingAddress' => $customer?->shippingAddress,
             'countries' => $countryRepository->getAll(),
-            'shippingOptions' => $shippingRepository->getOptions(),
+            'shippingMethods' => $shippingRepository->getAll(),
             'session' => $session,
         ]);
     }
