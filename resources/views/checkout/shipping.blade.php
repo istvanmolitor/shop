@@ -5,6 +5,7 @@
 @section('page_subtitle')Adja meg a szállítási adatait és válassza ki a szállítási módot.@endsection
 
 @section('content')
+    @include('shop::components.checkout-steps', ['current' => 2])
     @if ($errors->any())
         <div class="mb-3 text-sm text-red-700">
             <ul class="list-disc pl-5">

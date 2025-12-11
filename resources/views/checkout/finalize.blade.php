@@ -5,6 +5,7 @@
 @section('page_subtitle')Ellenőrizze az adatait, majd küldje el a megrendelést.@endsection
 
 @section('content')
+    @include('shop::components.checkout-steps', ['current' => 4])
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <div>
             <h3 class="font-semibold mb-2">Számlázási adatok</h3>

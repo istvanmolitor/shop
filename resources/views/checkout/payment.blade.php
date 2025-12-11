@@ -5,6 +5,7 @@
 @section('page_subtitle')Adja meg a számlázási adatait és válassza ki a fizetési módot.@endsection
 
 @section('content')
+    @include('shop::components.checkout-steps', ['current' => 3])
     @if ($errors->any())
         <div class="mb-3 text-sm text-red-700">
             <ul class="list-disc pl-5">
