@@ -15,11 +15,25 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        // Összesített végösszeg a kosárhoz (alapértelmezett devizanemben)
+                        /** @var \Molitor\Currency\Services\Price $grandTotal */
+                        $grandTotal = new \Molitor\Currency\Services\Price(0, null);
+                    @endphp
                     @foreach($items as $item)
                         @php
                             $product = $item->product;
-                            $price = (float)($product->price ?? 0);
-                            $subtotal = $price * (int)$item->quantity;
+                            // Egységár a termék beállított devizanemében, megjelenítéshez átváltva az alapértelmezettre
+                            /** @var \Molitor\Currency\Services\Price $unitPrice */
+                            $unitPrice = $product->getPrice();
+                            $unitPriceDefault = $unitPrice->exchangeDefault();
+
+                            // Részösszeg: egységár * mennyiség, alapértelmezett devizanemben
+                            $lineSubtotal = $unitPrice->multiple((int)$item->quantity)->exchangeDefault();
+
+                            // Végösszeg növelése a részösszeggel (árfolyam egyeztetés automatikusan megtörténik)
+                            $grandTotal = $grandTotal->addition($lineSubtotal);
+
                             $img = optional($product->productImages->first());
                             $imgUrl = $img?->getSrc();
                         @endphp
@@ -35,7 +49,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-3 text-right whitespace-nowrap">{{ $product->getPrice() }}</td>
+                            <td class="p-3 text-right whitespace-nowrap">{{ $unitPriceDefault }}</td>
                             <td class="p-3">
                                 <div class="flex items-center justify-end gap-2">
                                     <button wire:click="decrementQty({{ $item->id }})" class="px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50" aria-label="Csökkentés">−</button>
@@ -44,7 +58,7 @@
                                     <button wire:click="saveQty({{ $item->id }})" class="px-2 py-1 rounded-md border border-blue-600 text-white bg-blue-600 hover:bg-blue-700">Mentés</button>
                                 </div>
                             </td>
-                            <td class="p-3 text-right whitespace-nowrap font-medium">eeeeee</td>
+                            <td class="p-3 text-right whitespace-nowrap font-medium">{{ $lineSubtotal }}</td>
                             <td class="p-3 text-right">
                                 <button wire:click="removeItem({{ $item->id }})" class="px-3 py-1.5 rounded-md border border-rose-600 text-white bg-rose-600 hover:bg-rose-700">Törlés</button>
                             </td>
@@ -54,7 +68,7 @@
                 <tfoot>
                     <tr class="bg-slate-50 border-t border-slate-200">
                         <td class="p-3" colspan="3"><span class="font-semibold">Végösszeg</span></td>
-                        <td class="p-3 text-right font-bold" colspan="2">pppppp</td>
+                        <td class="p-3 text-right font-bold" colspan="2">{{ $grandTotal->exchangeDefault() }}</td>
                     </tr>
                 </tfoot>
             </table>
