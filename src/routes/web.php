@@ -26,8 +26,16 @@ Route::middleware('web')->group(function () {
         Route::get('/shop/profile', [ShopProfileController::class, 'show'])->name('shop.profile.show');
         Route::post('/shop/profile', [ShopProfileController::class, 'update'])->name('shop.profile.update');
 
-        // Checkout
-        Route::get('/shop/checkout', [ShopCheckoutController::class, 'show'])->name('shop.checkout.show');
+        // Checkout wizard
+        Route::get('/shop/checkout/shipping', [ShopCheckoutController::class, 'showShipping'])->name('shop.checkout.shipping');
+        Route::post('/shop/checkout/shipping', [ShopCheckoutController::class, 'storeShipping'])->name('shop.checkout.shipping.store');
+        Route::get('/shop/checkout/payment', [ShopCheckoutController::class, 'showPayment'])->name('shop.checkout.payment');
+        Route::post('/shop/checkout/payment', [ShopCheckoutController::class, 'storePayment'])->name('shop.checkout.payment.store');
+        Route::get('/shop/checkout/finalize', [ShopCheckoutController::class, 'showFinalize'])->name('shop.checkout.finalize');
+        Route::post('/shop/checkout/place', [ShopCheckoutController::class, 'placeOrder'])->name('shop.checkout.place');
+
+        // Backward compatible single-page endpoint (optional)
+        Route::get('/shop/checkout', [ShopCheckoutController::class, 'redirectToWizard'])->name('shop.checkout.show');
         Route::post('/shop/checkout', [ShopCheckoutController::class, 'store'])->name('shop.checkout.store');
 
         // Orders
