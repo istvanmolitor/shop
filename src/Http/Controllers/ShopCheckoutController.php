@@ -143,6 +143,10 @@ class ShopCheckoutController extends BaseController
         if (!isset($checkout['shipping'])) {
             return Redirect::route('shop.checkout.shipping');
         }
+        $orderShippingId = (int)($checkout['order_shipping_id'] ?? 0);
+        if ($orderShippingId <= 0) {
+            return Redirect::route('shop.checkout.shipping');
+        }
 
         $customerRepository = app(CustomerRepositoryInterface::class);
         $customer = $customerRepository->getByUser(Auth::user());
@@ -152,13 +156,18 @@ class ShopCheckoutController extends BaseController
         $countryRepository = app(CountryRepositoryInterface::class);
         /** @var OrderPaymentRepositoryInterface $paymentRepository */
         $paymentRepository = app(OrderPaymentRepositoryInterface::class);
+        $paymentMethods = $paymentRepository->getByShippingId($orderShippingId);
+        if ($paymentMethods->isEmpty()) {
+            return Redirect::route('shop.checkout.shipping')
+                ->with('status', __('Ehhez a szállítási módhoz jelenleg nincs elérhető fizetési mód. Kérjük, válasszon másik szállítási módot.'));
+        }
         return view('shop::checkout.payment', [
             'customer' => $customer,
             'invoiceAddress' => $customer?->invoiceAddress,
             'countries' => $countryRepository->getAll(),
-            // Keep options for potential uses, but pass full methods to show radio list with prices
-            'paymentOptions' => $paymentRepository->getOptions(),
-            'paymentMethods' => $paymentRepository->getAll(),
+            // Keep options for potential uses, but pass only those allowed for the selected shipping
+            'paymentOptions' => $paymentRepository->getOptionsByShippingId($orderShippingId),
+            'paymentMethods' => $paymentMethods,
             'session' => $checkout,
         ]);
     }

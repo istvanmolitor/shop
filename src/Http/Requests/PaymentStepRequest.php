@@ -3,6 +3,7 @@
 namespace Molitor\Shop\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PaymentStepRequest extends FormRequest
 {
@@ -13,6 +14,7 @@ class PaymentStepRequest extends FormRequest
 
     public function rules(): array
     {
+        $orderShippingId = (int) data_get(session('checkout', []), 'order_shipping_id');
         return [
             // Billing data provided on payment step; can be same as shipping
             'billing_same_as_shipping' => ['nullable', 'boolean'],
@@ -22,7 +24,15 @@ class PaymentStepRequest extends FormRequest
             'billing.city' => ['required_without:billing_same_as_shipping', 'string', 'max:255'],
             'billing.address' => ['required_without:billing_same_as_shipping', 'string', 'max:255'],
 
-            'order_payment_id' => ['required', 'integer', 'exists:order_payments,id'],
+            // Payment must be allowed for selected shipping
+            'order_payment_id' => [
+                'required',
+                'integer',
+                Rule::exists('order_shipping_payments', 'order_payment_id')
+                    ->when($orderShippingId > 0, function ($rule) use ($orderShippingId) {
+                        return $rule->where('order_shipping_id', $orderShippingId);
+                    }),
+            ],
         ];
     }
 }
