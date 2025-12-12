@@ -68,6 +68,18 @@
 
                     <div class="pt-2">
                         <h4 class="text-sm font-medium text-slate-900 mb-2">Számlázási adatok</h4>
+                        <div class="mb-4">
+                            <label for="invoice_country_id" class="block text-sm font-medium text-slate-700 mb-1">Ország</label>
+                            <select id="invoice_country_id" name="invoice_country_id" class="w-full rounded-md border border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 px-3 py-2">
+                                <option value="">Válasszon országot</option>
+                                @isset($countries)
+                                    @foreach($countries as $country)
+                                        <option value="{{ $country->id }}" @selected(old('invoice_country_id') == $country->id)>{{ $country->name }}</option>
+                                    @endforeach
+                                @endisset
+                            </select>
+                            @error('invoice_country_id')<div class="text-sm text-red-600 mt-1">{{ $message }}</div>@enderror
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="invoice_zip_code" class="block text-sm font-medium text-slate-700 mb-1">Irányítószám</label>
@@ -89,6 +101,18 @@
 
                     <div class="pt-2">
                         <h4 class="text-sm font-medium text-slate-900 mb-2">Szállítási adatok</h4>
+                        <div class="mb-4">
+                            <label for="shipping_country_id" class="block text-sm font-medium text-slate-700 mb-1">Ország</label>
+                            <select id="shipping_country_id" name="shipping_country_id" class="w-full rounded-md border border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 px-3 py-2">
+                                <option value="">Válasszon országot</option>
+                                @isset($countries)
+                                    @foreach($countries as $country)
+                                        <option value="{{ $country->id }}" @selected(old('shipping_country_id') == $country->id)>{{ $country->name }}</option>
+                                    @endforeach
+                                @endisset
+                            </select>
+                            @error('shipping_country_id')<div class="text-sm text-red-600 mt-1">{{ $message }}</div>@enderror
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="shipping_zip_code" class="block text-sm font-medium text-slate-700 mb-1">Irányítószám</label>

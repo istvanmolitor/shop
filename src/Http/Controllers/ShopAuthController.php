@@ -14,6 +14,7 @@ use Molitor\Customer\Models\Customer;
 use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
 use Molitor\Language\Repositories\LanguageRepositoryInterface;
 use Molitor\Address\Repositories\AddressRepositoryInterface;
+use Molitor\Address\Repositories\CountryRepositoryInterface;
 
 class ShopAuthController extends BaseController
 {
@@ -41,9 +42,10 @@ class ShopAuthController extends BaseController
         ]);
     }
 
-    public function showRegister()
+    public function showRegister(CountryRepositoryInterface $countryRepository)
     {
-        return view('shop::auth.register');
+        $countries = $countryRepository->getAll();
+        return view('shop::auth.register', compact('countries'));
     }
 
     public function register(
@@ -59,9 +61,12 @@ class ShopAuthController extends BaseController
             // Customer optional fields
             'customer_name' => ['nullable', 'string', 'max:255'],
             'tax_number' => ['nullable', 'string', 'max:50'],
+            // Addresses optional fields
+            'invoice_country_id' => ['nullable', 'integer', 'exists:countries,id'],
             'invoice_zip_code' => ['nullable', 'string', 'max:32'],
             'invoice_city' => ['nullable', 'string', 'max:255'],
             'invoice_address' => ['nullable', 'string', 'max:255'],
+            'shipping_country_id' => ['nullable', 'integer', 'exists:countries,id'],
             'shipping_zip_code' => ['nullable', 'string', 'max:32'],
             'shipping_city' => ['nullable', 'string', 'max:255'],
             'shipping_address' => ['nullable', 'string', 'max:255'],
@@ -90,12 +95,14 @@ class ShopAuthController extends BaseController
             // Save addresses if provided
             $invoiceValues = [
                 'name' => $customer->name,
+                'country_id' => $data['invoice_country_id'] ?? null,
                 'zip_code' => $data['invoice_zip_code'] ?? '',
                 'city' => $data['invoice_city'] ?? '',
                 'address' => $data['invoice_address'] ?? '',
             ];
             $shippingValues = [
                 'name' => $customer->name,
+                'country_id' => $data['shipping_country_id'] ?? null,
                 'zip_code' => $data['shipping_zip_code'] ?? '',
                 'city' => $data['shipping_city'] ?? '',
                 'address' => $data['shipping_address'] ?? '',
