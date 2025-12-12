@@ -9,16 +9,26 @@
         $mainUrl = $mainImage?->getSrc();
     @endphp
 
-    <p><a class="inline-flex items-center gap-1 font-medium text-slate-700 hover:text-slate-900 no-underline" href="{{ route('shop.products.index') }}">← Vissza a listához</a></p>
+    <p class="flex items-center justify-between">
+        <a class="inline-flex items-center gap-1 font-medium text-slate-700 hover:text-slate-900 no-underline" href="{{ route('shop.products.index') }}">← Vissza a listához</a>
+        @can('acl', 'product')
+            <a
+                href="{{ \Molitor\Product\Filament\Resources\ProductResource::getUrl('edit', ['record' => $product]) }}"
+                class="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 no-underline"
+                title="Termék szerkesztése"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM3 21h3.75L17.81 9.94l-3.75-3.75L3 17.25V21Z"/>
+                </svg>
+            </a>
+        @endcan
+    </p>
 
     <div class="grid gap-4 md:grid-cols-2">
         <div>
-            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-                <div class="relative pt-[70%] bg-slate-100">
-                    @if($mainUrl)
-                        <img class="absolute inset-0 w-full h-full object-cover" src="{{ $mainUrl }}" alt="{{ $product->name }}">
-                    @endif
-                </div>
+            @livewire('molitor.shop.http.livewire.product-gallery-component', ['productId' => $product->id])
+
+            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm mt-4">
                 <div class="p-4">
                     <div class="font-bold text-blue-700">
                         {{ $product->getPrice() }}
