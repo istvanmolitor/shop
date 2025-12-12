@@ -53,59 +53,28 @@
             <h2 class="mt-0 text-lg font-semibold">Részletek</h2>
             <table class="w-full border-collapse text-sm">
                 <tbody>
-                <tr class="border-t first:border-t-0 border-slate-200"><th class="w-44 text-left bg-slate-50 p-2">Azonosító</th><td class="p-2">{{ $product->id }}</td></tr>
                 <tr class="border-t border-slate-200"><th class="text-left bg-slate-50 p-2">SKU</th><td class="p-2">{{ $product->sku }}</td></tr>
-                <tr class="border-t border-slate-200"><th class="text-left bg-slate-50 p-2">Slug</th><td class="p-2">{{ $product->slug }}</td></tr>
-                <tr class="border-t border-slate-200">
-                    <th class="text-left bg-slate-50 p-2">Egységár</th>
-                    <td class="p-2">
-                        {{ number_format((float)($product->price ?? 0), 2, ',', ' ') }}
-                        @if($product->currency)
-                            {{ $product->currency->code }}
-                        @endif
-                        @if($product->productUnit)
-                            / {{ $product->productUnit->name }}
-                        @endif
-                    </td>
-                </tr>
+                @php
+                    // Collect attributes as [label => value]
+                    $detailAttributes = $product->productAttributes->map(function($attr){
+                        $opt = $attr->productFieldOption;
+                        return $opt ? [
+                            'label' => $opt->productField->name,
+                            'value' => $opt->name,
+                        ] : null;
+                    })->filter();
+                @endphp
+                @foreach($detailAttributes as $attr)
+                    <tr class="border-t border-slate-200">
+                        <th class="text-left bg-slate-50 p-2">{{ $attr['label'] }}</th>
+                        <td class="p-2">{{ $attr['value'] }}</td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 mt-4">
-        <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
-            <h2 class="mt-0 text-lg font-semibold">Kategóriák</h2>
-            @if($product->productCategories->isEmpty())
-                <p class="text-slate-500">Nincs kategória megadva.</p>
-            @else
-                <ul class="list-disc pl-5 space-y-1">
-                    @foreach($product->productCategories as $category)
-                        <li>{{ $category->name }}</li>
-                    @endforeach
-                </ul>
-            @endif
-        </div>
-    </div>
-
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4 mt-4">
-        <h2 class="mt-0 text-lg font-semibold">Jellemzők</h2>
-        @php
-            $attributes = $product->productAttributes->map(function($attr){
-                $opt = $attr->productFieldOption;
-                return $opt ? ($opt->productField->name . ': ' . $opt->name) : null;
-            })->filter();
-        @endphp
-        @if($attributes->isEmpty())
-            <p class="text-slate-500">Nincsenek jellemzők.</p>
-        @else
-            <ul class="columns-2 gap-4 [column-fill:_balance] list-disc pl-5">
-                @foreach($attributes as $text)
-                    <li class="break-inside-avoid">{{ $text }}</li>
-                @endforeach
-            </ul>
-        @endif
-    </div>
     @if($product->description)
         <div class="mt-4 prose prose-slate">
             {{ $product->description }}
