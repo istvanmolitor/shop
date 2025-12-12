@@ -45,7 +45,8 @@ class ShopAuthController extends BaseController
     public function showRegister(CountryRepositoryInterface $countryRepository)
     {
         $countries = $countryRepository->getAll();
-        return view('shop::auth.register', compact('countries'));
+        $defaultCountryId = $countryRepository->getDefaultId();
+        return view('shop::auth.register', compact('countries', 'defaultCountryId'));
     }
 
     public function register(

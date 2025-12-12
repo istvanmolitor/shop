@@ -74,7 +74,7 @@
                                 <option value="">Válasszon országot</option>
                                 @isset($countries)
                                     @foreach($countries as $country)
-                                        <option value="{{ $country->id }}" @selected(old('invoice_country_id') == $country->id)>{{ $country->name }}</option>
+                                        <option value="{{ $country->id }}" @selected(old('invoice_country_id', $defaultCountryId ?? null) == $country->id)>{{ $country->name }}</option>
                                     @endforeach
                                 @endisset
                             </select>
@@ -107,7 +107,7 @@
                                 <option value="">Válasszon országot</option>
                                 @isset($countries)
                                     @foreach($countries as $country)
-                                        <option value="{{ $country->id }}" @selected(old('shipping_country_id') == $country->id)>{{ $country->name }}</option>
+                                        <option value="{{ $country->id }}" @selected(old('shipping_country_id', $defaultCountryId ?? null) == $country->id)>{{ $country->name }}</option>
                                     @endforeach
                                 @endisset
                             </select>
