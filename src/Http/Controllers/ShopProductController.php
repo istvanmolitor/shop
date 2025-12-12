@@ -4,6 +4,7 @@ namespace Molitor\Shop\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use Molitor\Product\Models\Product;
+use Molitor\Stock\Services\StockService;
 
 class ShopProductController extends BaseController
 {
@@ -13,7 +14,7 @@ class ShopProductController extends BaseController
         return view('shop::products.index');
     }
 
-    public function show(Product $product)
+    public function show(Product $product, StockService $stockService)
     {
         $product->load([
             'productUnit',
@@ -23,6 +24,10 @@ class ShopProductController extends BaseController
             'productCategories',
         ]);
 
-        return view('shop::products.show', compact('product'));
+        // Aggregate stock across all locations (null location)
+        $stock = $stockService->getStock(null, $product);
+        $inStock = $stock > 0;
+
+        return view('shop::products.show', compact('product', 'stock', 'inStock'));
     }
 }
