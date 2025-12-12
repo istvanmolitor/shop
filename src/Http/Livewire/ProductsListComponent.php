@@ -20,6 +20,14 @@ class ProductsListComponent extends Component
     public int $page = 1;
     public ?int $categoryId = null;
     public string $sort = 'id_desc'; // id_desc | name_asc | name_desc | price_asc | price_desc
+    public ?float $minPrice = null;
+    public ?float $maxPrice = null;
+    /** @var array<int, array<int>> fieldId => [optionIds] */
+    public array $selectedAttributeOptions = [];
+
+    protected $listeners = [
+        'filtersUpdated' => 'onFiltersUpdated',
+    ];
 
     protected $queryString = [
         'q' => ['except' => ''],
@@ -51,6 +59,14 @@ class ProductsListComponent extends Component
         return in_array($sort, $allowed, true) ? $sort : 'id_desc';
     }
 
+    public function onFiltersUpdated(array $filters): void
+    {
+        $this->minPrice = isset($filters['minPrice']) && $filters['minPrice'] !== '' ? (float)$filters['minPrice'] : null;
+        $this->maxPrice = isset($filters['maxPrice']) && $filters['maxPrice'] !== '' ? (float)$filters['maxPrice'] : null;
+        $this->selectedAttributeOptions = is_array($filters['attributes'] ?? null) ? $filters['attributes'] : [];
+        $this->resetPage();
+    }
+
     protected function query(): Builder
     {
         $product = new Product();
@@ -73,6 +89,25 @@ class ProductsListComponent extends Component
             $query->where(function ($q) use ($term, $translationTable) {
                 $q->where($translationTable . '.name', 'like', $term)
                   ->orWhere('products.sku', 'like', $term);
+            });
+        }
+
+        // Price filter
+        if ($this->minPrice !== null) {
+            $query->where('products.price', '>=', $this->minPrice);
+        }
+        if ($this->maxPrice !== null) {
+            $query->where('products.price', '<=', $this->maxPrice);
+        }
+
+        // Attribute filters: require match for each selected field group
+        foreach ($this->selectedAttributeOptions as $fieldId => $optionIds) {
+            if (!is_array($optionIds) || count($optionIds) === 0) {
+                continue;
+            }
+            $optionIds = array_values(array_unique(array_map('intval', $optionIds)));
+            $query->whereHas('productAttributes', function (Builder $q) use ($optionIds) {
+                $q->whereIn('product_field_option_id', $optionIds);
             });
         }
 
