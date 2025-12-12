@@ -19,21 +19,36 @@ class ProductsListComponent extends Component
     public int $perPage = 12;
     public int $page = 1;
     public ?int $categoryId = null;
+    public string $sort = 'id_desc'; // id_desc | name_asc | name_desc | price_asc | price_desc
 
     protected $queryString = [
         'q' => ['except' => ''],
         'page' => ['except' => 1],
+        'sort' => ['except' => 'id_desc'],
     ];
 
     public function mount(?int $categoryId = null): void
     {
         $this->q = (string)request()->query('q', '');
         $this->categoryId = $categoryId;
+        $this->sort = $this->normalizeSort((string)request()->query('sort', $this->sort));
     }
 
     public function updatingQ(): void
     {
         $this->resetPage();
+    }
+
+    public function updatingSort(): void
+    {
+        $this->sort = $this->normalizeSort($this->sort);
+        $this->resetPage();
+    }
+
+    private function normalizeSort(string $sort): string
+    {
+        $allowed = ['id_desc', 'name_asc', 'name_desc', 'price_asc', 'price_desc'];
+        return in_array($sort, $allowed, true) ? $sort : 'id_desc';
     }
 
     protected function query(): Builder
@@ -44,8 +59,7 @@ class ProductsListComponent extends Component
         $query = Product::query()
             ->with(['productImages'])
             ->joinTranslation()
-            ->selectBase()
-            ->orderByDesc('id');
+            ->selectBase();
 
         if ($this->categoryId) {
             $categoryId = $this->categoryId;
@@ -60,6 +74,26 @@ class ProductsListComponent extends Component
                 $q->where($translationTable . '.name', 'like', $term)
                   ->orWhere('products.sku', 'like', $term);
             });
+        }
+
+        // Apply sorting
+        switch ($this->sort) {
+            case 'name_asc':
+                $query->orderBy($translationTable . '.name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy($translationTable . '.name', 'desc');
+                break;
+            case 'price_asc':
+                $query->orderBy('products.price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('products.price', 'desc');
+                break;
+            case 'id_desc':
+            default:
+                $query->orderByDesc('products.id');
+                break;
         }
 
         return $query;
