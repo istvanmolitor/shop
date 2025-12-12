@@ -11,6 +11,7 @@ use Molitor\Shop\Http\Livewire\HeaderCartComponent;
 use Molitor\Shop\Http\Livewire\ProductsListComponent;
 use Molitor\Shop\Http\Livewire\ProductGalleryComponent;
 use Molitor\Shop\Http\Livewire\ProductsFilterComponent;
+use Molitor\Shop\Http\Livewire\SidebarCategoriesComponent;
 use Molitor\Shop\Repositories\CartProductRepository;
 use Molitor\Shop\Repositories\CartProductRepositoryInterface;
 
@@ -32,6 +33,7 @@ class ShopServiceProvider extends ServiceProvider
         Livewire::component('molitor.shop.http.livewire.header-cart-component', HeaderCartComponent::class);
         Livewire::component('molitor.shop.http.livewire.product-gallery-component', ProductGalleryComponent::class);
         Livewire::component('molitor.shop.http.livewire.products-filter-component', ProductsFilterComponent::class);
+        Livewire::component('molitor.shop.http.livewire.sidebar-categories-component', SidebarCategoriesComponent::class);
 
         // Publish public assets (e.g., fallback images) to public/vendor/shop
         $this->publishes([
