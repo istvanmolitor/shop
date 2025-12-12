@@ -11,6 +11,10 @@
                 @include('shop::layouts.includes.main-menu')
             </div>
 
+            <div class="hidden md:block ml-2">
+                @include('language::components.language-switcher')
+            </div>
+
             <div class="relative ml-2">
                 <livewire:molitor.shop.http.livewire.header-cart-component />
             </div>
@@ -27,6 +31,7 @@
             <div class="px-4 py-3 space-y-3">
                 @include('shop::layouts.includes.search')
                 @include('shop::layouts.includes.main-menu')
+                @include('language::components.language-switcher')
             </div>
         </div>
     </nav>
