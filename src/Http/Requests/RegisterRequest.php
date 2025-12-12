@@ -22,11 +22,13 @@ class RegisterRequest extends FormRequest
             'customer_name' => ['nullable', 'string', 'max:255'],
             'tax_number' => ['nullable', 'string', 'max:50'],
 
-            // Addresses optional fields
+            // Addresses fields
+            'invoice_name' => ['required', 'string', 'max:255'],
             'invoice_country_id' => ['required', 'integer', 'exists:countries,id'],
             'invoice_zip_code' => ['required', 'string', 'max:32'],
             'invoice_city' => ['required', 'string', 'max:255'],
             'invoice_address' => ['required', 'string', 'max:255'],
+            'shipping_name' => ['required', 'string', 'max:255'],
             'shipping_country_id' => ['required', 'integer', 'exists:countries,id'],
             'shipping_zip_code' => ['required', 'string', 'max:32'],
             'shipping_city' => ['required', 'string', 'max:255'],

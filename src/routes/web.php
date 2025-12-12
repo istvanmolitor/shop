@@ -8,6 +8,7 @@ use Molitor\Shop\Http\Controllers\ShopProfileController;
 use Molitor\Shop\Http\Controllers\ShopCheckoutController;
 use Molitor\Shop\Http\Controllers\ShopOrderController;
 use Molitor\Shop\Http\Controllers\ShopCategoryController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::middleware('web')->group(function () {
     Route::get('/shop/products', [ShopProductController::class, 'index'])->name('shop.products.index');
@@ -19,7 +20,13 @@ Route::middleware('web')->group(function () {
     Route::post('/shop/login', [ShopAuthController::class, 'login'])->name('shop.login.post');
     Route::get('/shop/register', [ShopAuthController::class, 'showRegister'])->name('shop.register');
     Route::post('/shop/register', [ShopAuthController::class, 'register'])->name('shop.register.post');
+    Route::get('/shop/register/success', [ShopAuthController::class, 'registerSuccess'])->name('shop.register.success');
     Route::post('/shop/logout', [ShopAuthController::class, 'logout'])->name('shop.logout');
+
+    // Email verification
+    Route::get('/email/verify/{id}/{hash}', [ShopAuthController::class, 'verifyEmail'])
+        ->middleware(['web', 'signed'])
+        ->name('verification.verify');
 
     // Profile (auth required)
     Route::middleware('auth')->group(function () {

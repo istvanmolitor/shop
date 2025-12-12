@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Validation\ValidationException;
 use Molitor\Customer\Models\Customer;
 use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
@@ -35,6 +36,16 @@ class ShopAuthController extends BaseController
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
+
+            // Block unverified users from logging in
+            $user = Auth::user();
+            if (method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail()) {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'email' => __('Kérjük, erősítse meg az e-mail címét a belépés előtt. Ellenőrizze a postafiókját.'),
+                ]);
+            }
+
             return redirect()->intended(route('shop.products.index'));
         }
 
@@ -80,14 +91,14 @@ class ShopAuthController extends BaseController
 
             // Save addresses if provided
             $invoiceValues = [
-                'name' => $customer->name,
+                'name' => $data['invoice_name'] ?? $customer->name,
                 'country_id' => $data['invoice_country_id'] ?? null,
                 'zip_code' => $data['invoice_zip_code'] ?? '',
                 'city' => $data['invoice_city'] ?? '',
                 'address' => $data['invoice_address'] ?? '',
             ];
             $shippingValues = [
-                'name' => $customer->name,
+                'name' => $data['shipping_name'] ?? $customer->name,
                 'country_id' => $data['shipping_country_id'] ?? null,
                 'zip_code' => $data['shipping_zip_code'] ?? '',
                 'city' => $data['shipping_city'] ?? '',
@@ -112,11 +123,36 @@ class ShopAuthController extends BaseController
             ]);
         }
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        // Send email verification and show success page
+        event(new Registered($user));
+        if (method_exists($user, 'sendEmailVerificationNotification')) {
+            $user->sendEmailVerificationNotification();
+        }
 
-        return redirect()->intended(route('shop.products.index'))
-            ->with('status', __('Sikeres regisztráció!'));
+        return redirect()->route('shop.register.success');
+    }
+
+    public function registerSuccess()
+    {
+        return view('shop::auth.register-success');
+    }
+
+    public function verifyEmail(Request $request, int $id, string $hash): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+
+        // Validate hash matches
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            abort(403, 'Invalid verification link.');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->route('shop.login')->with('status', __('Az e-mail cím már meg lett erősítve.'));
+        }
+
+        $user->markEmailAsVerified();
+
+        return redirect()->route('shop.login')->with('status', __('Sikeres e-mail megerősítés! Most már bejelentkezhet.'));
     }
 
     public function logout(Request $request): RedirectResponse

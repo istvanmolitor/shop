@@ -69,6 +69,11 @@
                     <div class="pt-2">
                         <h4 class="text-sm font-medium text-slate-900 mb-2">Számlázási adatok</h4>
                         <div class="mb-4">
+                            <label for="invoice_name" class="block text-sm font-medium text-slate-700 mb-1">Név</label>
+                            <input id="invoice_name" name="invoice_name" type="text" value="{{ old('invoice_name', old('customer_name') ?: old('name')) }}" class="w-full rounded-md border border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 px-3 py-2">
+                            @error('invoice_name')<div class="text-sm text-red-600 mt-1">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-4">
                             <label for="invoice_country_id" class="block text-sm font-medium text-slate-700 mb-1">Ország</label>
                             <select id="invoice_country_id" name="invoice_country_id" class="w-full rounded-md border border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 px-3 py-2">
                                 <option value="">Válasszon országot</option>
@@ -101,6 +106,11 @@
 
                     <div class="pt-2">
                         <h4 class="text-sm font-medium text-slate-900 mb-2">Szállítási adatok</h4>
+                        <div class="mb-4">
+                            <label for="shipping_name" class="block text-sm font-medium text-slate-700 mb-1">Név</label>
+                            <input id="shipping_name" name="shipping_name" type="text" value="{{ old('shipping_name', old('customer_name') ?: old('name')) }}" class="w-full rounded-md border border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 px-3 py-2">
+                            @error('shipping_name')<div class="text-sm text-red-600 mt-1">{{ $message }}</div>@enderror
+                        </div>
                         <div class="mb-4">
                             <label for="shipping_country_id" class="block text-sm font-medium text-slate-700 mb-1">Ország</label>
                             <select id="shipping_country_id" name="shipping_country_id" class="w-full rounded-md border border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 px-3 py-2">
