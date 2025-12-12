@@ -29,9 +29,9 @@
                             $imgUrl = $img?->getSrc();
                         @endphp
                         <div class="py-2 flex items-center gap-3">
-                            @if($imgUrl)
-                                <img class="w-10 h-10 object-cover rounded border border-slate-200" src="{{ $imgUrl }}" alt="{{ $product->name }}">
-                            @endif
+                            @php($fallback = asset('vendor/shop/product/noimage.png'))
+                            @php($src = $imgUrl ?: $fallback)
+                            <img class="w-10 h-10 object-cover rounded border border-slate-200" src="{{ $src }}" alt="{{ $product->name }}">
                             <div class="min-w-0 flex-1">
                                 <a class="block text-sm font-medium text-slate-900 truncate no-underline hover:text-slate-950" href="{{ route('shop.products.show', $product) }}">{{ $product->name }}</a>
                                 <div class="text-xs text-slate-500">{{ (int)$item->quantity }} × {{ $product->getPrice() }}</div>

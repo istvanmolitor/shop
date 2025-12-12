@@ -6,15 +6,15 @@
                 $hasImages = count($images) > 0;
                 $current = $hasImages ? ($images[$currentIndex] ?? null) : null;
                 $currentUrl = $current['url'] ?? null;
+                $fallback = asset('vendor/shop/product/noimage.png');
+                $src = $currentUrl ?: $fallback;
             @endphp
-            @if($currentUrl)
-                <img
-                    class="absolute inset-0 w-full h-full object-cover cursor-zoom-in"
-                    src="{{ $currentUrl }}"
-                    alt="{{ $current['alt'] ?? '' }}"
-                    wire:click="openLightbox"
-                >
-            @endif
+            <img
+                class="absolute inset-0 w-full h-full object-cover {{ $currentUrl ? 'cursor-zoom-in' : '' }}"
+                src="{{ $src }}"
+                alt="{{ $current['alt'] ?? '' }}"
+                @if($currentUrl) wire:click="openLightbox" @endif
+            >
         </div>
 
         <!-- Thumbnails -->
@@ -52,9 +52,7 @@
 
                     <div class="relative pt-[60%] bg-black/20 rounded-lg overflow-hidden">
                         @php $url = $images[$currentIndex]['url'] ?? null; @endphp
-                        @if($url)
-                            <img src="{{ $url }}" alt="" class="absolute inset-0 w-full h-full object-contain bg-black">
-                        @endif
+                        <img src="{{ $url ?: asset('vendor/shop/product/noimage.png') }}" alt="" class="absolute inset-0 w-full h-full object-contain bg-black">
 
                         @if(count($images) > 1)
                             <button type="button" class="absolute inset-y-0 left-0 w-12 flex items-center justify-center text-white/70 hover:text-white" wire:click="prev" aria-label="Előző">‹</button>

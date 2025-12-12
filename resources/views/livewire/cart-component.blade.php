@@ -40,9 +40,9 @@
                         <tr class="border-t border-slate-200">
                             <td class="p-3">
                                 <div class="flex items-center gap-3">
-                                    @if($imgUrl)
-                                        <img class="w-12 h-12 object-cover rounded-md border border-slate-200" src="{{ $imgUrl }}" alt="{{ $product->name }}">
-                                    @endif
+                                    @php($fallback = asset('vendor/shop/product/noimage.png'))
+                                    @php($src = $imgUrl ?: $fallback)
+                                    <img class="w-12 h-12 object-cover rounded-md border border-slate-200" src="{{ $src }}" alt="{{ $product->name }}">
                                     <div>
                                         <a class="font-medium text-slate-900 hover:text-slate-950 no-underline" href="{{ route('shop.products.show', $product) }}">{{ $product->name }}</a>
                                         <div class="text-slate-500 text-xs">SKU: {{ $product->sku }}</div>

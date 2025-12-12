@@ -30,6 +30,11 @@ class ShopServiceProvider extends ServiceProvider
         Livewire::component('molitor.shop.http.livewire.products-list-component', ProductsListComponent::class);
         Livewire::component('molitor.shop.http.livewire.header-cart-component', HeaderCartComponent::class);
         Livewire::component('molitor.shop.http.livewire.product-gallery-component', ProductGalleryComponent::class);
+
+        // Publish public assets (e.g., fallback images) to public/vendor/shop
+        $this->publishes([
+            __DIR__ . '/../../resources/assets' => public_path('vendor/shop'),
+        ], 'public');
     }
 
     public function register()
