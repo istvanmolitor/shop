@@ -15,6 +15,7 @@ use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
 use Molitor\Language\Repositories\LanguageRepositoryInterface;
 use Molitor\Address\Repositories\AddressRepositoryInterface;
 use Molitor\Address\Repositories\CountryRepositoryInterface;
+use Molitor\Shop\Http\Requests\RegisterRequest;
 
 class ShopAuthController extends BaseController
 {
@@ -50,28 +51,12 @@ class ShopAuthController extends BaseController
     }
 
     public function register(
-        Request $request,
+        RegisterRequest $request,
         CurrencyRepositoryInterface $currencyRepository,
         LanguageRepositoryInterface $languageRepository,
         AddressRepositoryInterface $addressRepository
     ): RedirectResponse {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            // Customer optional fields
-            'customer_name' => ['nullable', 'string', 'max:255'],
-            'tax_number' => ['nullable', 'string', 'max:50'],
-            // Addresses optional fields
-            'invoice_country_id' => ['nullable', 'integer', 'exists:countries,id'],
-            'invoice_zip_code' => ['nullable', 'string', 'max:32'],
-            'invoice_city' => ['nullable', 'string', 'max:255'],
-            'invoice_address' => ['nullable', 'string', 'max:255'],
-            'shipping_country_id' => ['nullable', 'integer', 'exists:countries,id'],
-            'shipping_zip_code' => ['nullable', 'string', 'max:32'],
-            'shipping_city' => ['nullable', 'string', 'max:255'],
-            'shipping_address' => ['nullable', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         DB::beginTransaction();
         try {
