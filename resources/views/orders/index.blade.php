@@ -1,7 +1,7 @@
 @extends('shop::layouts.app')
 
-@section('title', 'Megrendeléseim')
-@section('page_title', 'Megrendeléseim')
+@section('title', __('shop::common.menu.orders'))
+@section('page_title', __('shop::common.menu.orders'))
 
 @section('content')
     @if (session('status'))
@@ -11,16 +11,16 @@
     @endif
 
     @if($orders->count() === 0)
-        <div class="text-slate-600">Még nincs megrendelése.</div>
+        <div class="text-slate-600">{{ __('shop::common.orders.none') }}</div>
     @else
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead>
                 <tr class="text-left text-slate-600 border-b">
-                    <th class="py-2 pr-4">Kód</th>
-                    <th class="py-2 pr-4">Státusz</th>
-                    <th class="py-2 pr-4">Létrehozva</th>
-                    <th class="py-2 pr-4">Műveletek</th>
+                    <th class="py-2 pr-4">{{ __('shop::common.orders.table.code') }}</th>
+                    <th class="py-2 pr-4">{{ __('shop::common.orders.table.status') }}</th>
+                    <th class="py-2 pr-4">{{ __('shop::common.orders.table.created_at') }}</th>
+                    <th class="py-2 pr-4">{{ __('shop::common.orders.table.actions') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,7 +30,7 @@
                         <td class="py-2 pr-4">{{ optional($order->orderStatus)->name }}</td>
                         <td class="py-2 pr-4">{{ $order->created_at?->format('Y-m-d H:i') }}</td>
                         <td class="py-2 pr-4">
-                            <a class="text-blue-700 hover:underline" href="{{ route('shop.orders.show', $order->code) }}">Részletek</a>
+                            <a class="text-blue-700 hover:underline" href="{{ route('shop.orders.show', $order->code) }}">{{ __('shop::common.orders.table.details') }}</a>
                         </td>
                     </tr>
                 @endforeach

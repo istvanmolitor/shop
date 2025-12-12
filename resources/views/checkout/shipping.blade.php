@@ -1,8 +1,8 @@
 @extends('shop::layouts.app')
 
-@section('title', 'Megrendelés – Szállítási adatok')
-@section('page_title', 'Megrendelés – 1/3: Szállítás')
-@section('page_subtitle')Adja meg a szállítási adatait és válassza ki a szállítási módot.@endsection
+@section('title', __('shop::common.checkout.shipping.title'))
+@section('page_title', __('shop::common.checkout.shipping.page_title'))
+@section('page_subtitle'){{ __('shop::common.checkout.shipping.subtitle') }}@endsection
 
 @section('content')
     @include('shop::components.checkout-steps', ['current' => 2])
@@ -20,7 +20,7 @@
         @csrf
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <h3 class="font-semibold mb-2">Szállítási mód</h3>
+                <h3 class="font-semibold mb-2">{{ __('shop::common.checkout.shipping.method') }}</h3>
                 <div class="p-4 border rounded space-y-3">
                     @php($selectedShippingId = old('order_shipping_id', data_get($session,'order_shipping_id')))
                     @foreach($shippingMethods as $method)
@@ -42,16 +42,16 @@
                 </div>
             </div>
             <div class="md:col-span-2">
-                <h3 class="font-semibold mb-2">Szállítási adatok</h3>
+                <h3 class="font-semibold mb-2">{{ __('shop::common.checkout.shipping.data') }}</h3>
                 <div class="p-4 border rounded space-y-3">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Név</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.checkout.name') }}</label>
                         <input type="text" name="shipping[name]" value="{{ old('shipping.name', data_get($session,'shipping.name', $shippingAddress?->name ?? $customer?->name)) }}" class="mt-1 block w-full border rounded p-2" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Ország</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.checkout.country') }}</label>
                         <select name="shipping[country_id]" class="mt-1 block w-full border rounded p-2" required>
-                            <option value="">– Válasszon –</option>
+                            <option value="">{{ __('shop::common.address.select_placeholder') }}</option>
                             @foreach($countries as $country)
                                 <option value="{{ $country->id }}" @selected(old('shipping.country_id', data_get($session,'shipping.country_id', $shippingAddress?->country_id)) == $country->id)>{{ $country->name }}</option>
                             @endforeach
@@ -59,16 +59,16 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Irányítószám</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.address.zip_code') }}</label>
                             <input type="text" name="shipping[zip_code]" value="{{ old('shipping.zip_code', data_get($session,'shipping.zip_code', $shippingAddress?->zip_code)) }}" class="mt-1 block w-full border rounded p-2" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Város</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.address.city') }}</label>
                             <input type="text" name="shipping[city]" value="{{ old('shipping.city', data_get($session,'shipping.city', $shippingAddress?->city)) }}" class="mt-1 block w-full border rounded p-2" required>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Cím</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.address.address') }}</label>
                         <input type="text" name="shipping[address]" value="{{ old('shipping.address', data_get($session,'shipping.address', $shippingAddress?->address)) }}" class="mt-1 block w-full border rounded p-2" required>
                     </div>
                 </div>
@@ -76,8 +76,8 @@
         </div>
 
         <div class="mt-4 flex items-center justify-between">
-            <a href="{{ route('shop.cart.index') }}" class="text-gray-600">Vissza a kosárhoz</a>
-            <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Tovább a fizetéshez</button>
+            <a href="{{ route('shop.cart.index') }}" class="text-gray-600">{{ __('shop::common.checkout.shipping.back_to_cart') }}</a>
+            <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">{{ __('shop::common.checkout.shipping.continue_to_payment') }}</button>
         </div>
     </form>
 

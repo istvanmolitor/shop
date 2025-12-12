@@ -8,7 +8,7 @@
             <button type="button"
                     wire:click.prevent="toggleExpand({{ (int)$category->id }})"
                     class="mr-1 inline-flex h-6 w-6 items-center justify-center rounded hover:bg-slate-100 text-slate-600"
-                    aria-label="{{ $isOpen ? 'Becsukás' : 'Kinyitás' }}">
+                    aria-label="{{ $isOpen ? __('shop::common.categories.collapse') : __('shop::common.categories.expand') }}">
                 @if($isOpen)
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
                         <path fill-rule="evenodd" d="M5 12a1 1 0 011-1h12a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />

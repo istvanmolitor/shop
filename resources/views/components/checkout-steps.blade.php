@@ -1,5 +1,5 @@
 @props([
-    // 1: Kosár, 2: Szállítás, 3: Fizetés, 4: Megrendelés
+    // 1: Cart, 2: Shipping, 3: Payment, 4: Order
     'current' => 1,
     // Optional custom links per step: ['cart' => url, 'shipping' => url, 'payment' => url, 'finalize' => url]
     'links' => [],
@@ -7,10 +7,10 @@
 
 @php
     $steps = [
-        1 => ['key' => 'cart', 'label' => 'Kosár'],
-        2 => ['key' => 'shipping', 'label' => 'Szállítás'],
-        3 => ['key' => 'payment', 'label' => 'Fizetés'],
-        4 => ['key' => 'finalize', 'label' => 'Megrendelés'],
+        1 => ['key' => 'cart', 'label' => __('shop::common.checkout.steps.cart')],
+        2 => ['key' => 'shipping', 'label' => __('shop::common.checkout.steps.shipping')],
+        3 => ['key' => 'payment', 'label' => __('shop::common.checkout.steps.payment')],
+        4 => ['key' => 'finalize', 'label' => __('shop::common.checkout.steps.finalize')],
     ];
 
     // Default routes for steps
@@ -53,5 +53,5 @@
             </li>
         @endforeach
     </ol>
-    <div class="mt-2 text-xs text-gray-500">Lépések: Kosár → Szállítás → Fizetés → Megrendelés</div>
+    <div class="mt-2 text-xs text-gray-500">{{ __('shop::common.checkout.steps.legend') }}</div>
   </nav>

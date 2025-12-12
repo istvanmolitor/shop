@@ -21,6 +21,8 @@ class ShopServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'shop');
+        // Register package translations under the "shop" namespace
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'shop');
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
         // Register Blade component namespace for package components

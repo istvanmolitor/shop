@@ -10,12 +10,12 @@
     @endphp
 
     <p class="flex items-center justify-between">
-        <a class="inline-flex items-center gap-1 font-medium text-slate-700 hover:text-slate-900 no-underline" href="{{ route('shop.products.index') }}">← Vissza a listához</a>
+        <a class="inline-flex items-center gap-1 font-medium text-slate-700 hover:text-slate-900 no-underline" href="{{ route('shop.products.index') }}">{{ __('shop::common.products.show.back') }}</a>
         @can('acl', 'product')
             <a
                 href="{{ \Molitor\Product\Filament\Resources\ProductResource::getUrl('edit', ['record' => $product]) }}"
                 class="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 no-underline"
-                title="Termék szerkesztése"
+                title="{{ __('shop::common.products.show.edit_title') }}"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                     <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM3 21h3.75L17.81 9.94l-3.75-3.75L3 17.25V21Z"/>
@@ -39,9 +39,9 @@
                     <form method="post" action="{{ route('shop.cart.store') }}" class="mt-3 flex items-center gap-2">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <label class="text-sm text-slate-600" for="qty">Mennyiség</label>
+                        <label class="text-sm text-slate-600" for="qty">{{ __('shop::common.products.show.qty') }}</label>
                         <input id="qty" name="quantity" type="number" min="1" value="1" class="w-20 border border-slate-300 rounded-md px-2 py-1">
-                        <button type="submit" class="inline-flex items-center gap-2 border border-emerald-600 bg-emerald-600 text-white px-3 py-2 rounded-md hover:bg-emerald-700">Kosárba</button>
+                        <button type="submit" class="inline-flex items-center gap-2 border border-emerald-600 bg-emerald-600 text-white px-3 py-2 rounded-md hover:bg-emerald-700">{{ __('shop::common.products.show.add_to_cart') }}</button>
                     </form>
                     @if(session('status'))
                         <div class="text-sm text-emerald-700 mt-2">{{ session('status') }}</div>
@@ -50,10 +50,10 @@
             </div>
         </div>
         <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
-            <h2 class="mt-0 text-lg font-semibold">Részletek</h2>
+            <h2 class="mt-0 text-lg font-semibold">{{ __('shop::common.products.show.details') }}</h2>
             <table class="w-full border-collapse text-sm">
                 <tbody>
-                <tr class="border-t border-slate-200"><th class="text-left bg-slate-50 p-2">SKU</th><td class="p-2">{{ $product->sku }}</td></tr>
+                <tr class="border-t border-slate-200"><th class="text-left bg-slate-50 p-2">{{ __('shop::common.products.show.sku') }}</th><td class="p-2">{{ $product->sku }}</td></tr>
                 @php
                     // Collect attributes as [label => value]
                     $detailAttributes = $product->productAttributes->map(function($attr){

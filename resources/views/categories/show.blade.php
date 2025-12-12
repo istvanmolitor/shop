@@ -2,7 +2,7 @@
 
 @section('title', $category->name . ' – Molitor Shop')
 @section('page_title', $category->name)
-@section('page_subtitle')Tekintse meg a(z) {{ $category->name }} kategóriában elérhető termékeket @endsection
+@section('page_subtitle'){{ __('shop::common.categories.subtitle', ['name' => $category->name]) }}@endsection
 
 @section('content')
     @if($category->description)
@@ -13,7 +13,7 @@
     @php($children = $category->productCategories ?? collect())
     @if($children->isNotEmpty())
         <div class="mb-8">
-            <h3 class="text-lg font-semibold text-slate-900 mb-4">Alkategóriák</h3>
+            <h3 class="text-lg font-semibold text-slate-900 mb-4">{{ __('shop::common.categories.subcategories') }}</h3>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @foreach($children as $child)
                     <a href="{{ route('shop.categories.show', $child) }}" class="group block rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow">
