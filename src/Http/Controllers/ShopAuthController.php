@@ -58,6 +58,7 @@ class ShopAuthController extends BaseController
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             // Customer optional fields
             'customer_name' => ['nullable', 'string', 'max:255'],
+            'tax_number' => ['nullable', 'string', 'max:50'],
             'invoice_zip_code' => ['nullable', 'string', 'max:32'],
             'invoice_city' => ['nullable', 'string', 'max:255'],
             'invoice_address' => ['nullable', 'string', 'max:255'],
@@ -80,6 +81,7 @@ class ShopAuthController extends BaseController
                 'internal_name' => $data['email'],
                 'is_buyer' => true,
                 'user_id' => $user->id,
+                'tax_number' => $data['tax_number'] ?? null,
                 'currency_id' => $currencyRepository->getDefaultId(),
                 'language_id' => $languageRepository->getDefaultId(),
                 // invoice/shipping addresses will be auto-created in model creating hook
