@@ -43,6 +43,15 @@
         </div>
     </div>
 
+    @if(isset($shippingTypeView))
+    <div class="mt-6">
+        <h3 class="font-semibold mb-2">Szállítási adatok</h3>
+        <div class="p-4 border rounded text-sm">
+            {!! $shippingTypeView !!}
+        </div>
+    </div>
+    @endif
+
     <form action="{{ route('shop.checkout.place') }}" method="post" class="mt-6">
         @csrf
         <div class="mt-2">

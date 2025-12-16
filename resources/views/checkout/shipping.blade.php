@@ -26,7 +26,10 @@
                     @foreach($shippingMethods as $method)
                         @php($price = $method->getPrice()->exchangeDefault())
                         <label class="flex items-start gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
-                            <input type="radio" name="order_shipping_id" value="{{ $method->id }}" class="mt-1"
+                            <input type="radio" name="order_shipping_id" value="{{ $method->id }}"
+                                   class="mt-1 shipping-method-radio"
+                                   data-shipping-type="{{ $method->type }}"
+                                   data-shipping-id="{{ $method->id }}"
                                    @checked($selectedShippingId == $method->id) required>
                             <div class="flex-1">
                                 <div class="flex items-center justify-between">
@@ -73,6 +76,28 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Dynamic Shipping Type Forms --}}
+            <div class="md:col-span-2" id="shipping-type-forms">
+                @foreach($shippingMethods as $method)
+                    @if($method->type)
+                        @php($shippingType = $shippingHandler->getShippingType($method->type))
+                        @if($shippingType)
+                            <div class="shipping-type-form p-4 border rounded space-y-3"
+                                 data-shipping-id="{{ $method->id }}"
+                                 style="display: {{ $selectedShippingId == $method->id ? 'block' : 'none' }};">
+                                <h3 class="font-semibold mb-2">{{ $shippingType->getLabel() }}</h3>
+                                @php
+                                    $sessionShippingData = data_get($session, 'shipping_data', []);
+                                    $oldShippingData = old('shipping_data', $sessionShippingData);
+                                    $viewData = $shippingType->prepare($oldShippingData);
+                                @endphp
+                                {!! $shippingType->view($viewData) !!}
+                            </div>
+                        @endif
+                    @endif
+                @endforeach
+            </div>
         </div>
 
         <div class="mt-4 flex items-center justify-between">
@@ -81,5 +106,33 @@
         </div>
     </form>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const radios = document.querySelectorAll('.shipping-method-radio');
+            const forms = document.querySelectorAll('.shipping-type-form');
+
+            function updateVisibleForm() {
+                const selectedRadio = document.querySelector('.shipping-method-radio:checked');
+                if (!selectedRadio) return;
+
+                const selectedShippingId = selectedRadio.dataset.shippingId;
+
+                forms.forEach(form => {
+                    if (form.dataset.shippingId === selectedShippingId) {
+                        form.style.display = 'block';
+                    } else {
+                        form.style.display = 'none';
+                    }
+                });
+            }
+
+            radios.forEach(radio => {
+                radio.addEventListener('change', updateVisibleForm);
+            });
+
+            // Initialize on page load
+            updateVisibleForm();
+        });
+    </script>
 
 @endsection

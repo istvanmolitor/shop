@@ -117,12 +117,17 @@ class ShopCheckoutController extends BaseController
 
         $session = session('checkout', []);
 
+        // Get all shipping methods with their types
+        $shippingMethods = $shippingRepository->getAll();
+        $shippingHandler = app(\Molitor\Order\Services\ShippingHandler::class);
+
         return view('shop::checkout.shipping', [
             'customer' => $customer,
             'invoiceAddress' => $customer?->invoiceAddress,
             'shippingAddress' => $customer?->shippingAddress,
             'countries' => $countryRepository->getAll(),
-            'shippingMethods' => $shippingRepository->getAll(),
+            'shippingMethods' => $shippingMethods,
+            'shippingHandler' => $shippingHandler,
             'session' => $session,
         ]);
     }
@@ -133,6 +138,23 @@ class ShopCheckoutController extends BaseController
         $checkout = session('checkout', []);
         $checkout['shipping'] = $data['shipping'] ?? [];
         $checkout['order_shipping_id'] = $data['order_shipping_id'];
+
+        // Prepare shipping_data using the ShippingType's prepare method
+        $shippingData = $data['shipping_data'] ?? [];
+        if ($data['order_shipping_id']) {
+            /** @var \Molitor\Order\Models\OrderShipping $shipping */
+            $shipping = \Molitor\Order\Models\OrderShipping::find($data['order_shipping_id']);
+            if ($shipping && $shipping->type) {
+                /** @var \Molitor\Order\Services\ShippingHandler $handler */
+                $handler = app(\Molitor\Order\Services\ShippingHandler::class);
+                $shippingType = $handler->getShippingType($shipping->type);
+                if ($shippingType) {
+                    $shippingData = $shippingType->prepare($shippingData);
+                }
+            }
+        }
+
+        $checkout['shipping_data'] = $shippingData;
         session(['checkout' => $checkout]);
         return Redirect::route('shop.checkout.payment');
     }
@@ -207,10 +229,26 @@ class ShopCheckoutController extends BaseController
         $paymentOptions = $paymentRepository->getOptions();
         $shippingOptions = $shippingRepository->getOptions();
 
+        // Render shipping type view if available
+        $shippingTypeView = null;
+        if (isset($checkout['order_shipping_id'], $checkout['shipping_data'])) {
+            /** @var \Molitor\Order\Models\OrderShipping $shipping */
+            $shipping = \Molitor\Order\Models\OrderShipping::find($checkout['order_shipping_id']);
+            if ($shipping && $shipping->type) {
+                /** @var \Molitor\Order\Services\ShippingHandler $handler */
+                $handler = app(\Molitor\Order\Services\ShippingHandler::class);
+                $shippingType = $handler->getShippingType($shipping->type);
+                if ($shippingType) {
+                    $shippingTypeView = $shippingType->view($checkout['shipping_data'])->render();
+                }
+            }
+        }
+
         return view('shop::checkout.finalize', [
             'data' => $checkout,
             'paymentLabel' => $paymentOptions[$checkout['order_payment_id']] ?? null,
             'shippingLabel' => $shippingOptions[$checkout['order_shipping_id']] ?? null,
+            'shippingTypeView' => $shippingTypeView,
         ]);
     }
 
@@ -251,6 +289,7 @@ class ShopCheckoutController extends BaseController
             'order_shipping_id' => $checkout['order_shipping_id'],
             'invoice_address_id' => $invoiceAddress->id,
             'shipping_address_id' => $shippingAddress->id,
+            'shipping_data' => $checkout['shipping_data'] ?? null,
             // Comment will be posted on finalize step; keep backward-compat with any session-stored value
             'comment' => request()->input('comment', $checkout['comment'] ?? null),
         ]);
