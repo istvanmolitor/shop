@@ -5,6 +5,7 @@ return [
         'products' => 'Products',
         'orders' => 'My orders',
         'profile' => 'Profile',
+        'my_profile' => 'My Profile',
         'admin' => 'Admin',
         'logout' => 'Log out',
         'login' => 'Log in',

@@ -16,9 +16,13 @@ class ShopMenuBuilder extends MenuBuilder
 
         // Authenticated user menu items
         if (auth()->check()) {
-            // Profile menu item with submenus
-            $profileMenuItem = $menu->addItem(__('shop::common.menu.profile'), route('shop.profile.show'))
+            // Profile menu item with submenus (icon only, no label)
+            $profileMenuItem = $menu->addItem('', null)
                 ->setIcon('heroicon-o-user-circle');
+
+            // My Profile as submenu item under Profile
+            $profileMenuItem->addItem(__('shop::common.menu.my_profile'), route('shop.profile.show'))
+                ->setIcon('heroicon-o-user');
 
             // Orders as submenu item under Profile
             $profileMenuItem->addItem(__('shop::common.menu.orders'), route('shop.orders.index'))

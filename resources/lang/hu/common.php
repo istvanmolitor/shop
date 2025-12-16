@@ -5,6 +5,7 @@ return [
         'products' => 'Termékek',
         'orders' => 'Megrendeléseim',
         'profile' => 'Profil',
+        'my_profile' => 'Profilom',
         'admin' => 'Admin',
         'logout' => 'Kijelentkezés',
         'login' => 'Belépés',
