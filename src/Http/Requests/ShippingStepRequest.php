@@ -23,4 +23,12 @@ class ShippingStepRequest extends FormRequest
             'order_shipping_id' => ['required', 'integer', 'exists:order_shippings,id'],
         ];
     }
+
+    /**
+     * Get custom attributes for validator errors.
+     */
+    public function attributes(): array
+    {
+        return __('shop::validation.attributes');
+    }
 }

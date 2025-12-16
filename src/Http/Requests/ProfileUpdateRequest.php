@@ -33,4 +33,12 @@ class ProfileUpdateRequest extends FormRequest
             'shipping.address' => ['required', 'string', 'max:255'],
         ];
     }
+
+    /**
+     * Get custom attributes for validator errors.
+     */
+    public function attributes(): array
+    {
+        return __('shop::validation.attributes');
+    }
 }
