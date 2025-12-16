@@ -11,7 +11,14 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "istvanmolitor/shop": "*@dev"
+        "istvanmolitor/menu": "*@dev",
+        "istvanmolitor/product": "*@dev",
+        "istvanmolitor/customer": "*@dev",
+        "istvanmolitor/order": "*@dev",
+        "istvanmolitor/address": "*@dev",
+        "istvanmolitor/currency": "*@dev",
+        "istvanmolitor/language": "*@dev",
+        "istvanmolitor/stock": "*@dev"
     },
     "autoload": {
         "psr-4": {
