@@ -17,6 +17,8 @@ use Molitor\Language\Repositories\LanguageRepositoryInterface;
 use Molitor\Address\Repositories\AddressRepositoryInterface;
 use Molitor\Address\Repositories\CountryRepositoryInterface;
 use Molitor\Shop\Http\Requests\RegisterRequest;
+use Molitor\Shop\Repositories\CartProductRepositoryInterface;
+use Molitor\Shop\Services\Owner;
 
 class ShopAuthController extends BaseController
 {
@@ -25,7 +27,7 @@ class ShopAuthController extends BaseController
         return view('shop::auth.login');
     }
 
-    public function login(Request $request): RedirectResponse
+    public function login(Request $request, CartProductRepositoryInterface $cartRepository): RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -45,8 +47,13 @@ class ShopAuthController extends BaseController
                     'email' => __('Kérjük, erősítse meg az e-mail címét a belépés előtt. Ellenőrizze a postafiókját.'),
                 ]);
             }
+            
+            $cartCount = $cartRepository->count(new Owner());
+            if ($cartCount > 0) {
+                return redirect()->route('shop.cart.index');
+            }
 
-            return redirect()->intended(route('shop.products.index'));
+            return redirect()->route('shop.products.index');
         }
 
         throw ValidationException::withMessages([
@@ -74,10 +81,9 @@ class ShopAuthController extends BaseController
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'password' => $data['password'], // hashed by model cast
+                'password' => $data['password'],
             ]);
 
-            // Create related customer
             $customer = Customer::create([
                 'name' => $data['customer_name'] ?: $data['name'],
                 'internal_name' => $data['email'],
@@ -86,10 +92,8 @@ class ShopAuthController extends BaseController
                 'tax_number' => $data['tax_number'] ?? null,
                 'currency_id' => $currencyRepository->getDefaultId(),
                 'language_id' => $languageRepository->getDefaultId(),
-                // invoice/shipping addresses will be auto-created in model creating hook
             ]);
 
-            // Save addresses if provided
             $invoiceValues = [
                 'name' => $data['invoice_name'] ?? $customer->name,
                 'country_id' => $data['invoice_country_id'] ?? null,
@@ -123,7 +127,6 @@ class ShopAuthController extends BaseController
             ]);
         }
 
-        // Send email verification and show success page
         event(new Registered($user));
         if (method_exists($user, 'sendEmailVerificationNotification')) {
             $user->sendEmailVerificationNotification();

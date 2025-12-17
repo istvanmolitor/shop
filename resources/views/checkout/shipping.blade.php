@@ -22,9 +22,13 @@
             <div>
                 <h3 class="font-semibold mb-2">{{ __('shop::common.checkout.shipping.method') }}</h3>
                 <div class="p-4 border rounded space-y-3">
-                    @php($selectedShippingId = old('order_shipping_id', data_get($session,'order_shipping_id')))
+                    @php
+                        $selectedShippingId = old('order_shipping_id', data_get($session,'order_shipping_id'));
+                    @endphp
                     @foreach($shippingMethods as $method)
-                        @php($price = $method->getPrice()->exchangeDefault())
+                        @php
+                            $price = $method->getPrice()->exchangeDefault();
+                        @endphp
                         <label class="flex items-start gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
                             <input type="radio" name="order_shipping_id" value="{{ $method->id }}"
                                    class="mt-1 shipping-method-radio"
@@ -44,44 +48,14 @@
                     @endforeach
                 </div>
             </div>
-            <div class="md:col-span-2">
-                <h3 class="font-semibold mb-2">{{ __('shop::common.checkout.shipping.data') }}</h3>
-                <div class="p-4 border rounded space-y-3">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.checkout.name') }}</label>
-                        <input type="text" name="shipping[name]" value="{{ old('shipping.name', data_get($session,'shipping.name', $shippingAddress?->name ?? $customer?->name)) }}" class="mt-1 block w-full border rounded p-2" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.checkout.country') }}</label>
-                        <select name="shipping[country_id]" class="mt-1 block w-full border rounded p-2" required>
-                            <option value="">{{ __('shop::common.address.select_placeholder') }}</option>
-                            @foreach($countries as $country)
-                                <option value="{{ $country->id }}" @selected(old('shipping.country_id', data_get($session,'shipping.country_id', $shippingAddress?->country_id)) == $country->id)>{{ $country->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.address.zip_code') }}</label>
-                            <input type="text" name="shipping[zip_code]" value="{{ old('shipping.zip_code', data_get($session,'shipping.zip_code', $shippingAddress?->zip_code)) }}" class="mt-1 block w-full border rounded p-2" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.address.city') }}</label>
-                            <input type="text" name="shipping[city]" value="{{ old('shipping.city', data_get($session,'shipping.city', $shippingAddress?->city)) }}" class="mt-1 block w-full border rounded p-2" required>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('shop::common.address.address') }}</label>
-                        <input type="text" name="shipping[address]" value="{{ old('shipping.address', data_get($session,'shipping.address', $shippingAddress?->address)) }}" class="mt-1 block w-full border rounded p-2" required>
-                    </div>
-                </div>
-            </div>
 
             {{-- Dynamic Shipping Type Forms --}}
             <div class="md:col-span-2" id="shipping-type-forms">
                 @foreach($shippingMethods as $method)
                     @if($method->type)
-                        @php($shippingType = $shippingHandler->getShippingType($method->type))
+                        @php
+                            $shippingType = $shippingHandler->getShippingType($method->type);
+                        @endphp
                         @if($shippingType)
                             <div class="shipping-type-form p-4 border rounded space-y-3"
                                  data-shipping-id="{{ $method->id }}"
