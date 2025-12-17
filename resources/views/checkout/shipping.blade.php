@@ -6,5 +6,8 @@
 
 @section('content')
     @include('shop::components.checkout-steps', ['current' => 2])
-    <x-shop::shipping-method-form />
+
+    <div class="max-w-4xl mx-auto">
+        @livewire('molitor.shop.http.livewire.shipping-method-component')
+    </div>
 @endsection

@@ -122,6 +122,7 @@ return [
             'data' => 'Szállítási adatok',
             'back_to_cart' => 'Vissza a kosárhoz',
             'continue_to_payment' => 'Tovább a fizetéshez',
+            'validation_errors' => 'Kérjük, javítsa ki az alábbi hibákat:',
         ],
     ],
     'profile' => [

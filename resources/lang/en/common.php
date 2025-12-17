@@ -123,6 +123,7 @@ return [
             'data' => 'Shipping data',
             'back_to_cart' => 'Back to cart',
             'continue_to_payment' => 'Continue to payment',
+            'validation_errors' => 'Please correct the following errors:',
         ],
     ],
     'profile' => [

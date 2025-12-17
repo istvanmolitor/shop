@@ -114,6 +114,16 @@ return [
             'finalize' => 'Bestellung',
             'legend' => 'Schritte: Warenkorb → Versand → Zahlung → Bestellung',
         ],
+        'shipping' => [
+            'title' => 'Bestellung – Versanddetails',
+            'page_title' => 'Bestellung – 1/3: Versand',
+            'subtitle' => 'Geben Sie Ihre Versanddaten ein und wählen Sie eine Versandart.',
+            'method' => 'Versandart',
+            'data' => 'Versanddaten',
+            'back_to_cart' => 'Zurück zum Warenkorb',
+            'continue_to_payment' => 'Weiter zur Zahlung',
+            'validation_errors' => 'Bitte korrigieren Sie die folgenden Fehler:',
+        ],
     ],
     'search' => [
         'submit' => 'Suchen',

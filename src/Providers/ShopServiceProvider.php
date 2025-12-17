@@ -12,6 +12,7 @@ use Molitor\Shop\Http\Livewire\ProductsListComponent;
 use Molitor\Shop\Http\Livewire\ProductGalleryComponent;
 use Molitor\Shop\Http\Livewire\ProductsFilterComponent;
 use Molitor\Shop\Http\Livewire\SidebarCategoriesComponent;
+use Molitor\Shop\Http\Livewire\ShippingMethodComponent;
 use Molitor\Shop\Repositories\CartProductRepository;
 use Molitor\Shop\Repositories\CartProductRepositoryInterface;
 
@@ -28,9 +29,6 @@ class ShopServiceProvider extends ServiceProvider
         // Register Blade component namespace for package components
         Blade::componentNamespace('Molitor\\Shop\\View\\Components', 'shop');
 
-        // Register specific components
-        Blade::component('shop::shipping-method-form', \Molitor\Shop\View\Components\ShippingMethodForm::class);
-
         // Register Livewire components (package namespace)
         // Alias matches Livewire's auto-generated slug for FQCN-based mounting
         Livewire::component('molitor.shop.http.livewire.cart-component', CartComponent::class);
@@ -39,6 +37,7 @@ class ShopServiceProvider extends ServiceProvider
         Livewire::component('molitor.shop.http.livewire.product-gallery-component', ProductGalleryComponent::class);
         Livewire::component('molitor.shop.http.livewire.products-filter-component', ProductsFilterComponent::class);
         Livewire::component('molitor.shop.http.livewire.sidebar-categories-component', SidebarCategoriesComponent::class);
+        Livewire::component('molitor.shop.http.livewire.shipping-method-component', ShippingMethodComponent::class);
 
         // Publish public assets (e.g., fallback images) to public/vendor/shop
         $this->publishes([
