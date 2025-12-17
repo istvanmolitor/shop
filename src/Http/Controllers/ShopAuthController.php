@@ -47,7 +47,7 @@ class ShopAuthController extends BaseController
                     'email' => __('Kérjük, erősítse meg az e-mail címét a belépés előtt. Ellenőrizze a postafiókját.'),
                 ]);
             }
-            
+
             $cartCount = $cartRepository->count(new Owner());
             if ($cartCount > 0) {
                 return redirect()->route('shop.cart.index');

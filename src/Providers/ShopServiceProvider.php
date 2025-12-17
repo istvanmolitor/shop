@@ -28,6 +28,9 @@ class ShopServiceProvider extends ServiceProvider
         // Register Blade component namespace for package components
         Blade::componentNamespace('Molitor\\Shop\\View\\Components', 'shop');
 
+        // Register specific components
+        Blade::component('shop::shipping-method-form', \Molitor\Shop\View\Components\ShippingMethodForm::class);
+
         // Register Livewire components (package namespace)
         // Alias matches Livewire's auto-generated slug for FQCN-based mounting
         Livewire::component('molitor.shop.http.livewire.cart-component', CartComponent::class);

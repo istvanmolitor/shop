@@ -112,23 +112,12 @@ class ShopCheckoutController extends BaseController
 
         /** @var CountryRepositoryInterface $countryRepository */
         $countryRepository = app(CountryRepositoryInterface::class);
-        /** @var OrderShippingRepositoryInterface $shippingRepository */
-        $shippingRepository = app(OrderShippingRepositoryInterface::class);
-
-        $session = session('checkout', []);
-
-        // Get all shipping methods with their types
-        $shippingMethods = $shippingRepository->getAll();
-        $shippingHandler = app(\Molitor\Order\Services\ShippingHandler::class);
 
         return view('shop::checkout.shipping', [
             'customer' => $customer,
             'invoiceAddress' => $customer?->invoiceAddress,
             'shippingAddress' => $customer?->shippingAddress,
             'countries' => $countryRepository->getAll(),
-            'shippingMethods' => $shippingMethods,
-            'shippingHandler' => $shippingHandler,
-            'session' => $session,
         ]);
     }
 
