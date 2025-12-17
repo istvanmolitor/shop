@@ -97,8 +97,13 @@ class ShippingMethodComponent extends Component
                         // Validate shipping data using the shipping type's validation rules
                         $this->shippingData = $shippingType->validate($this->shippingData);
                     } catch (\Illuminate\Validation\ValidationException $e) {
-                        // Re-throw with proper error bag for Livewire
-                        throw $e;
+                        // Map validation errors to shippingData.* format for proper display
+                        $errors = [];
+                        foreach ($e->errors() as $key => $messages) {
+                            $errors['shippingData.' . $key] = $messages;
+                        }
+
+                        throw \Illuminate\Validation\ValidationException::withMessages($errors);
                     }
                 }
             }
