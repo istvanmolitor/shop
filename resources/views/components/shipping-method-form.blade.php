@@ -7,7 +7,7 @@
 <form action="{{ $submitRoute }}" method="post" class="mt-6">
     @csrf
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
+        <div class="mx-auto w-full max-w-2xl md:col-span-2">
             <h3 class="font-semibold mb-2">{{ __('shop::common.checkout.shipping.method') }}</h3>
             <div class="p-4 border rounded space-y-3">
                 @foreach($shippingMethods as $method)
