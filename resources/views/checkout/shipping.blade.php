@@ -28,7 +28,7 @@
         <div>
             @if($selectedShipping)
                 <h3 class="font-semibold mb-4">Szállítási adatok</h3>
-                <div>
+                <div class="border rounded-lg p-6 bg-white shadow-sm">
                     {!! $shippingForm !!}
                 </div>
             @endif
