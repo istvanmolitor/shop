@@ -11,6 +11,8 @@ use Molitor\Shop\Repositories\CartProductRepositoryInterface;
 
 class CartService
 {
+    const SESSION_KEY = 'cart';
+
     public function __construct(private readonly CartProductRepositoryInterface $cartRepository)
     {
     }
@@ -28,7 +30,7 @@ class CartService
      */
     protected function getSessionCart(): array
     {
-        return session()->get('cart', []);
+        return session()->get(static::SESSION_KEY, []);
     }
 
     /**
@@ -36,7 +38,7 @@ class CartService
      */
     protected function setSessionCart(array $cart): void
     {
-        session()->put('cart', $cart);
+        session()->put(static::SESSION_KEY, $cart);
     }
 
     /**
@@ -44,7 +46,7 @@ class CartService
      */
     protected function clearSessionCart(): void
     {
-        session()->forget('cart');
+        session()->forget(static::SESSION_KEY);
     }
 
     public function getItems(): Collection
