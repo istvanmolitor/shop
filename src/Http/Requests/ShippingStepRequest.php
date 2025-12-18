@@ -16,6 +16,7 @@ class ShippingStepRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'order_payment_id' => ['required', 'integer', 'exists:order_payments,id'],
             'order_shipping_id' => ['required', 'integer', 'exists:order_shippings,id'],
             'shipping_data' => ['nullable', 'array'],
         ];

@@ -16,7 +16,6 @@ use Molitor\Order\Repositories\OrderPaymentRepositoryInterface;
 use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
 use Molitor\Address\Models\Address;
 use Molitor\Shop\Http\Requests\CheckoutStoreRequest;
-use Molitor\Shop\Http\Requests\ShippingStepRequest;
 use Molitor\Shop\Http\Requests\PaymentStepRequest;
 
 class ShopCheckoutController extends BaseController
@@ -104,14 +103,6 @@ class ShopCheckoutController extends BaseController
         return Redirect::route('shop.checkout.shipping');
     }
 
-    public function showShipping(CustomerRepositoryInterface $customerRepository): View
-    {
-        $customer = $customerRepository->getByUser(Auth::user());
-
-        return view('shop::checkout.shipping', [
-            'customer' => $customer,
-        ]);
-    }
 
     public function showPayment(): View|RedirectResponse
     {
