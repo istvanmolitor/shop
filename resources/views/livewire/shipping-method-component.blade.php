@@ -28,28 +28,19 @@
                 @enderror
             </div>
 
-            {{-- Dynamic Shipping Type Forms --}}
             <div class="md:col-span-2">
-                @if($selectedShippingId && $this->selectedShippingTypeComponent)
-                    @php
-                        $selectedMethod = $this->shippingMethods->firstWhere('id', $selectedShippingId);
-                        $shippingType = $selectedMethod && $selectedMethod->type
-                            ? $this->shippingHandler->getShippingType($selectedMethod->type)
-                            : null;
-                    @endphp
-                    @if($shippingType)
-                        <div class="p-4 border rounded space-y-3">
-                            <h3 class="font-semibold mb-2">{{ $shippingType->getLabel() }}</h3>
-                            <div class="shipping-type-content">
-                                <livewire:dynamic-component
-                                    :is="$this->selectedShippingTypeComponent"
-                                    :shippingData="$shippingData"
-                                    :validationErrors="$shippingErrors"
-                                    :key="'shipping-' . $selectedShippingId"
-                                />
-                            </div>
+                @if($this->selectedShippingType)
+                    <div class="p-4 border rounded space-y-3">
+                        <h3 class="font-semibold mb-2">{{ $this->selectedShippingType->getLabel() }}</h3>
+                        <div class="shipping-type-content">
+                            <livewire:dynamic-component
+                                :is="$this->selectedShippingType->getLivewireComponent()"
+                                :shippingData="$shippingData"
+                                :validationErrors="$shippingErrors"
+                                :key="'shipping-' . $selectedShippingId"
+                            />
                         </div>
-                    @endif
+                    </div>
                 @endif
             </div>
         </div>

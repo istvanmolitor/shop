@@ -6,10 +6,9 @@ namespace Molitor\Shop\Http\Livewire;
 
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
-use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
-use Molitor\Order\Services\ShippingHandler;
 use Illuminate\Support\Collection;
 use Molitor\Order\Services\ShippingType;
+use Molitor\Shop\Services\CheckoutService;
 
 class ShippingMethodComponent extends Component
 {
@@ -17,8 +16,7 @@ class ShippingMethodComponent extends Component
     public array $shippingData = [];
     public array $shippingErrors = [];
 
-    protected OrderShippingRepositoryInterface $shippingRepository;
-    protected ShippingHandler $shippingHandler;
+    protected CheckoutService $checkoutService;
 
     protected $listeners = [
         'shippingDataUpdated' => 'handleShippingDataUpdate'
@@ -35,43 +33,27 @@ class ShippingMethodComponent extends Component
     ];
 
     public function boot(
-        OrderShippingRepositoryInterface $shippingRepository,
-        ShippingHandler $shippingHandler
+        CheckoutService $checkoutService
     ): void
     {
-        $this->shippingRepository = $shippingRepository;
-        $this->shippingHandler = $shippingHandler;
-    }
-
-    public function getShippingType(): ShippingType|null
-    {
-        if (!$this->selectedShippingId) {
-            return null;
-        }
-        $selectedMethod = $this->shippingMethods->firstWhere('id', $this->selectedShippingId);
-        if (!$selectedMethod || !$selectedMethod->type) {
-            return null;
-        }
-        return $this->shippingHandler->getShippingType($selectedMethod->type);
+        $this->checkoutService = $checkoutService;
     }
 
     public function mount(): void
     {
-        $checkout = session('checkout', []);
-        $this->selectedShippingId = isset($checkout['order_shipping_id'])
-            ? (int)$checkout['order_shipping_id']
-            : null;
-        $this->shippingData = $checkout['shipping_data'] ?? [];
+        $this->selectedShippingId = $this->checkoutService->getShippingId();
+        $this->shippingData = $this->checkoutService->getShippingData();
     }
 
     public function getShippingMethodsProperty(): Collection
     {
-        return $this->shippingRepository->getAll();
+        return $this->checkoutService->getShippingMethods();
     }
 
     public function updatedSelectedShippingId($value): void
     {
         $this->selectedShippingId = (int)$value ?? null;
+        $this->checkoutService->setShippingId($this->selectedShippingId);
         $this->shippingData = [];
         $this->shippingErrors = [];
     }
@@ -81,10 +63,9 @@ class ShippingMethodComponent extends Component
         $this->shippingData = $data;
     }
 
-    public function getSelectedShippingTypeComponentProperty(): string|null
+    public function getSelectedShippingTypeProperty(): ShippingType|null
     {
-        $shippingType = $this->getShippingType();
-        return $shippingType->getLivewireComponent();
+        return $this->checkoutService->getShippingType();
     }
 
     public function submit(): mixed
@@ -93,26 +74,21 @@ class ShippingMethodComponent extends Component
 
         $this->shippingErrors = [];
 
-        $shippinType = $this->getShippingType();
-        if ($shippinType) {
-            try {
-                $this->shippingData = $shippinType->validate($this->shippingData);
-            } catch (ValidationException $e) {
-                $this->shippingErrors = $e->errors();
+        try {
+            $this->shippingData = $this->checkoutService->validateShippingData($this->shippingData);
+        } catch (ValidationException $e) {
+            $this->shippingErrors = $e->errors();
 
-                $errors = [];
-                foreach ($e->errors() as $key => $messages) {
-                    $errors['shippingData.' . $key] = $messages;
-                }
-                throw ValidationException::withMessages($errors);
+            $errors = [];
+            foreach ($e->errors() as $key => $messages) {
+                $errors['shippingData.' . $key] = $messages;
             }
+            throw ValidationException::withMessages($errors);
         }
 
-        $checkout = session('checkout', []);
-        $checkout['order_shipping_id'] = $this->selectedShippingId;
-        $checkout['shipping_data'] = $this->shippingData;
-
-        session(['checkout' => $checkout]);
+        $this->checkoutService->setShippingId($this->selectedShippingId);
+        $this->checkoutService->setShippingData($this->shippingData);
+        $this->checkoutService->save();
 
         return redirect()->route('shop.checkout.payment');
     }
