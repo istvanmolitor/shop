@@ -5,7 +5,7 @@
 @section('page_subtitle'){{ __('shop::common.checkout.shipping.subtitle') }}@endsection
 
 @section('content')
-    @include('shop::components.checkout-steps', ['current' => 2])
+    <x-shop::checkout-steps current="shipping" />
 
     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
