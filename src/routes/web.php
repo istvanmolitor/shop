@@ -36,7 +36,7 @@ Route::middleware('web')->group(function () {
 
         // Checkout wizard
         Route::get('/shop/checkout/shipping', [ShopShippingController::class, 'index'])->name('shop.checkout.shipping');
-        Route::get('/shop/checkout/shipping/{payment:code}', [ShopShippingController::class, 'show'])->name('shop.checkout.shipping.show');
+        Route::get('/shop/checkout/shipping/{shipping:code}', [ShopShippingController::class, 'show'])->name('shop.checkout.shipping.show');
         Route::post('/shop/checkout/shipping', [ShopShippingController::class, 'store'])->name('shop.checkout.shipping.store');
         Route::get('/shop/checkout/payment', [ShopCheckoutController::class, 'showPayment'])->name('shop.checkout.payment');
         Route::post('/shop/checkout/payment', [ShopCheckoutController::class, 'storePayment'])->name('shop.checkout.payment.store');
