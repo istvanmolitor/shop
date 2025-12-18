@@ -49,6 +49,9 @@ return [
         'total' => 'Végösszeg',
         'view_cart' => 'Kosár tartalma',
     ],
+    'cart' => [
+        'product_added' => 'A termék bekerült a kosárba.',
+    ],
     'products' => [
         'sort' => 'Rendezés:',
         'no_results' => 'Nincs megjeleníthető termék.',

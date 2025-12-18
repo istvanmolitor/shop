@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Molitor\Shop\Repositories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Molitor\Shop\Models\CartProduct;
-use Molitor\Shop\Services\Owner;
 
 class CartProductRepository implements CartProductRepositoryInterface
 {
@@ -14,39 +14,40 @@ class CartProductRepository implements CartProductRepositoryInterface
     {
     }
 
-    protected function ownerScope(Owner $owner)
+    public function getAllByUser(?User $user): Collection
     {
-        $query = $this->model->newQuery();
-        if ($owner->getUserId()) {
-            $query->where('user_id', $owner->getUserId());
-        } elseif ($owner->getSessionId()) {
-            $query->where('session_id', $owner->getSessionId());
-        } else {
-            $query->whereRaw('1 = 0');
+        if ($user === null) {
+            return new Collection();
         }
-        return $query;
-    }
 
-    public function getAllByOwner(Owner $owner): Collection
-    {
-        return $this->ownerScope($owner)
+        return $this->model->newQuery()
+            ->where('user_id', $user->id)
             ->with('product.productImages')
             ->orderByDesc('id')
             ->get();
     }
 
-    public function findOne(Owner $owner, int $productId): ?CartProduct
+    public function findOne(?User $user, int $productId): ?CartProduct
     {
-        return $this->ownerScope($owner)
+        if ($user === null) {
+            return null;
+        }
+
+        return $this->model->newQuery()
+            ->where('user_id', $user->id)
             ->where('product_id', $productId)
             ->first();
     }
 
-    public function addOrIncrement(Owner $owner, int $productId, int $qty = 1): CartProduct
+    public function addOrIncrement(?User $user, int $productId, int $qty = 1): CartProduct
     {
+        if ($user === null) {
+            throw new \InvalidArgumentException('User must be authenticated to use database cart');
+        }
+
         $qty = max(1, $qty);
 
-        $existing = $this->findOne($owner, $productId);
+        $existing = $this->findOne($user, $productId);
         if ($existing) {
             $existing->quantity += $qty;
             $existing->save();
@@ -54,8 +55,7 @@ class CartProductRepository implements CartProductRepositoryInterface
         }
 
         $item = new CartProduct();
-        $item->user_id = $owner->getUserId();
-        $item->session_id = $owner->getSessionId();
+        $item->user_id = $user->id;
         $item->product_id = $productId;
         $item->quantity = $qty;
         $item->save();
@@ -64,7 +64,9 @@ class CartProductRepository implements CartProductRepositoryInterface
 
     public function updateQuantity(CartProduct $item, int $qty): CartProduct
     {
-        $item->quantity = max(0, $qty);
+        $qty = max(0, $qty);
+
+        $item->quantity = $qty;
         if ($item->quantity === 0) {
             $item->delete();
         } else {
@@ -78,13 +80,25 @@ class CartProductRepository implements CartProductRepositoryInterface
         $item->delete();
     }
 
-    public function clear(Owner $owner): void
+    public function clear(?User $user): void
     {
-        $this->ownerScope($owner)->delete();
+        if ($user === null) {
+            return;
+        }
+
+        $this->model->newQuery()
+            ->where('user_id', $user->id)
+            ->delete();
     }
 
-    public function count(Owner $owner): int
+    public function count(?User $user): int
     {
-        return (int) $this->ownerScope($owner)->sum('quantity');
+        if ($user === null) {
+            return 0;
+        }
+
+        return (int) $this->model->newQuery()
+            ->where('user_id', $user->id)
+            ->sum('quantity');
     }
 }

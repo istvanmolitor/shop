@@ -36,6 +36,9 @@
 
                             $img = optional($product->productImages->first());
                             $imgUrl = $img?->getSrc();
+
+                            // Use product_id as key for session-based carts, id for database carts
+                            $itemKey = $item->id ?? 'p_' . $item->product_id;
                         @endphp
                         <tr class="border-t border-slate-200">
                             <td class="p-3">
@@ -52,15 +55,15 @@
                             <td class="p-3 text-right whitespace-nowrap">{{ $unitPriceDefault }}</td>
                             <td class="p-3">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button wire:click="decrementQty({{ $item->id }})" class="px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50" aria-label="Csökkentés">−</button>
-                                    <input type="number" min="0" wire:model.defer="qty.{{ $item->id }}" class="w-20 border border-slate-300 rounded-md px-2 py-1 text-right" />
-                                    <button wire:click="incrementQty({{ $item->id }})" class="px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50" aria-label="Növelés">+</button>
-                                    <button wire:click="saveQty({{ $item->id }})" class="px-2 py-1 rounded-md border border-blue-600 text-white bg-blue-600 hover:bg-blue-700">Mentés</button>
+                                    <button wire:click="decrementQty('{{ $itemKey }}')" class="px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50" aria-label="Csökkentés">−</button>
+                                    <input type="number" min="0" wire:model.defer="qty.{{ $itemKey }}" class="w-20 border border-slate-300 rounded-md px-2 py-1 text-right" />
+                                    <button wire:click="incrementQty('{{ $itemKey }}')" class="px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50" aria-label="Növelés">+</button>
+                                    <button wire:click="saveQty('{{ $itemKey }}')" class="px-2 py-1 rounded-md border border-blue-600 text-white bg-blue-600 hover:bg-blue-700">Mentés</button>
                                 </div>
                             </td>
                             <td class="p-3 text-right whitespace-nowrap font-medium">{{ $lineSubtotal }}</td>
                             <td class="p-3 text-right">
-                                <button wire:click="removeItem({{ $item->id }})" class="px-3 py-1.5 rounded-md border border-rose-600 text-white bg-rose-600 hover:bg-rose-700">Törlés</button>
+                                <button wire:click="removeItem('{{ $itemKey }}')" class="px-3 py-1.5 rounded-md border border-rose-600 text-white bg-rose-600 hover:bg-rose-700">Törlés</button>
                             </td>
                         </tr>
                     @endforeach

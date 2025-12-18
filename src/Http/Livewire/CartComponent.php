@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Molitor\Shop\Http\Livewire;
 
 use Livewire\Component;
-use Molitor\Shop\Repositories\CartProductRepositoryInterface;
 use Molitor\Shop\Models\CartProduct;
 use Molitor\Shop\Services\CartService;
 
@@ -16,12 +15,10 @@ class CartComponent extends Component
     public $items; // Eloquent Collection (serialized by Livewire)
     public float $total = 0.0;
 
-    protected CartProductRepositoryInterface $cart;
     protected CartService $cartService;
 
-    public function boot(CartProductRepositoryInterface $cart, CartService $cartService): void
+    public function boot(CartService $cartService): void
     {
-        $this->cart = $cart;
         $this->cartService = $cartService;
     }
 
@@ -36,52 +33,66 @@ class CartComponent extends Component
         $this->total = $this->cartService->getTotal()->price;
         $this->qty = [];
         foreach ($this->items as $item) {
-            $this->qty[$item->id] = (int)$item->quantity;
+            // Use product_id as key for session-based carts
+            $key = $item->id ?? 'p_' . $item->product_id;
+            $this->qty[$key] = (int)$item->quantity;
         }
     }
 
-    public function incrementQty(int $itemId): void
+    public function incrementQty($itemKey): void
     {
-        $item = $this->findOwnedItem($itemId);
+        $item = $this->findOwnedItem($itemKey);
         if (!$item) return;
-        $this->cart->updateQuantity($item, ((int)$item->quantity) + 1);
+        $this->cartService->updateQuantity($item, ((int)$item->quantity) + 1);
         $this->refreshItems();
         $this->dispatch('cart-updated');
     }
 
-    public function decrementQty(int $itemId): void
+    public function decrementQty($itemKey): void
     {
-        $item = $this->findOwnedItem($itemId);
+        $item = $this->findOwnedItem($itemKey);
         if (!$item) return;
         $new = ((int)$item->quantity) - 1;
-        $this->cart->updateQuantity($item, $new);
+        $this->cartService->updateQuantity($item, $new);
         $this->refreshItems();
         $this->dispatch('cart-updated');
     }
 
-    public function saveQty(int $itemId): void
+    public function saveQty($itemKey): void
     {
-        $value = (int)($this->qty[$itemId] ?? 0);
-        $item = $this->findOwnedItem($itemId);
+        $value = (int)($this->qty[$itemKey] ?? 0);
+        $item = $this->findOwnedItem($itemKey);
         if (!$item) return;
-        $this->cart->updateQuantity($item, $value);
+        $this->cartService->updateQuantity($item, $value);
         $this->refreshItems();
         $this->dispatch('cart-updated');
     }
 
-    public function removeItem(int $itemId): void
+    public function removeItem($itemKey): void
     {
-        $item = $this->findOwnedItem($itemId);
+        $item = $this->findOwnedItem($itemKey);
         if (!$item) return;
-        $this->cart->remove($item);
+        $this->cartService->remove($item);
         $this->refreshItems();
         $this->dispatch('cart-updated');
     }
 
-    protected function findOwnedItem(int $itemId): CartProduct|int
+    protected function findOwnedItem($itemKey): ?CartProduct
     {
+        // If itemKey starts with 'p_', it's a session cart item (product_id)
+        if (is_string($itemKey) && str_starts_with($itemKey, 'p_')) {
+            $productId = (int)substr($itemKey, 2);
+            foreach ($this->items as $item) {
+                if ($item->product_id === $productId) {
+                    return $item;
+                }
+            }
+            return null;
+        }
+
+        // Otherwise it's a database ID
         return CartProduct::query()
-            ->where('id', $itemId)
+            ->where('id', $itemKey)
             ->first();
     }
 

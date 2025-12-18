@@ -17,8 +17,7 @@ use Molitor\Language\Repositories\LanguageRepositoryInterface;
 use Molitor\Address\Repositories\AddressRepositoryInterface;
 use Molitor\Address\Repositories\CountryRepositoryInterface;
 use Molitor\Shop\Http\Requests\RegisterRequest;
-use Molitor\Shop\Repositories\CartProductRepositoryInterface;
-use Molitor\Shop\Services\Owner;
+use Molitor\Shop\Services\CartService;
 
 class ShopAuthController extends BaseController
 {
@@ -27,7 +26,7 @@ class ShopAuthController extends BaseController
         return view('shop::auth.login');
     }
 
-    public function login(Request $request, CartProductRepositoryInterface $cartRepository): RedirectResponse
+    public function login(Request $request, CartService $cartService): RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -48,7 +47,10 @@ class ShopAuthController extends BaseController
                 ]);
             }
 
-            $cartCount = $cartRepository->count(new Owner());
+            // Merge guest cart from session into user's database cart
+            $cartService->mergeGuestCart();
+
+            $cartCount = $cartService->count();
             if ($cartCount > 0) {
                 return redirect()->route('shop.cart.index');
             }

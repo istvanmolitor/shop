@@ -49,6 +49,9 @@ return [
         'total' => 'Total',
         'view_cart' => 'View cart',
     ],
+    'cart' => [
+        'product_added' => 'The product has been added to your cart.',
+    ],
     'products' => [
         'sort' => 'Sort:',
         'no_results' => 'No products to display.',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Molitor\Shop\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Molitor\Product\Models\Product;
@@ -14,7 +15,6 @@ class CartProduct extends Model
 
     protected $fillable = [
         'user_id',
-        'session_id',
         'product_id',
         'quantity',
     ];
@@ -27,6 +27,6 @@ class CartProduct extends Model
     public function user(): BelongsTo
     {
         // Only if application has default User model
-        return $this->belongsTo(\App\Models\User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

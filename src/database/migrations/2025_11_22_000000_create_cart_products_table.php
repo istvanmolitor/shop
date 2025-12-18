@@ -9,8 +9,7 @@ return new class extends Migration {
     {
         Schema::create('cart_products', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable()->index();
-            $table->string('session_id', 100)->nullable()->index();
+            $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('product_id');
             $table->unsignedInteger('quantity')->default(1);
             $table->timestamps();
@@ -22,9 +21,8 @@ return new class extends Migration {
                 $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             }
 
-            // Helpful indexes to avoid duplicates per owner
-            $table->index(['user_id', 'product_id']);
-            $table->index(['session_id', 'product_id']);
+            // Helpful index to avoid duplicates per user
+            $table->unique(['user_id', 'product_id']);
         });
     }
 
