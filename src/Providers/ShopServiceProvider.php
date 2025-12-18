@@ -30,14 +30,13 @@ class ShopServiceProvider extends ServiceProvider
         Blade::componentNamespace('Molitor\\Shop\\View\\Components', 'shop');
 
         // Register Livewire components (package namespace)
-        // Alias matches Livewire's auto-generated slug for FQCN-based mounting
-        Livewire::component('molitor.shop.http.livewire.cart-component', CartComponent::class);
-        Livewire::component('molitor.shop.http.livewire.products-list-component', ProductsListComponent::class);
-        Livewire::component('molitor.shop.http.livewire.header-cart-component', HeaderCartComponent::class);
-        Livewire::component('molitor.shop.http.livewire.product-gallery-component', ProductGalleryComponent::class);
-        Livewire::component('molitor.shop.http.livewire.products-filter-component', ProductsFilterComponent::class);
-        Livewire::component('molitor.shop.http.livewire.sidebar-categories-component', SidebarCategoriesComponent::class);
-        Livewire::component('molitor.shop.http.livewire.shipping-method-component', ShippingMethodComponent::class);
+        Livewire::component('shop.cart', CartComponent::class);
+        Livewire::component('shop.products-list', ProductsListComponent::class);
+        Livewire::component('shop.header-cart', HeaderCartComponent::class);
+        Livewire::component('shop.product-gallery', ProductGalleryComponent::class);
+        Livewire::component('shop.products-filter', ProductsFilterComponent::class);
+        Livewire::component('shop.sidebar-categories', SidebarCategoriesComponent::class);
+        Livewire::component('shop.shipping-method', ShippingMethodComponent::class);
 
         // Publish public assets (e.g., fallback images) to public/vendor/shop
         $this->publishes([

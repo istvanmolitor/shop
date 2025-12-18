@@ -33,5 +33,5 @@
             </div>
         </div>
     @endif
-    @livewire('molitor.shop.http.livewire.products-list-component', ['categoryId' => $category->id])
+    @livewire('shop.products-list', ['categoryId' => $category->id])
 @endsection

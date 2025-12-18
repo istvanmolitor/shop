@@ -10,5 +10,5 @@
         <div class="mb-3 text-sm text-emerald-700">{{ session('status') }}</div>
     @endif
 
-    @livewire(\Molitor\Shop\Http\Livewire\CartComponent::class)
+    @livewire('shop.cart')
 @endsection

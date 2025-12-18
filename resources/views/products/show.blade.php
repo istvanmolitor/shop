@@ -26,7 +26,7 @@
 
     <div class="grid gap-4 md:grid-cols-2">
         <div>
-            @livewire('molitor.shop.http.livewire.product-gallery-component', ['productId' => $product->id])
+            @livewire('shop.product-gallery', ['productId' => $product->id])
 
             <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm mt-4">
                 <div class="p-4">
