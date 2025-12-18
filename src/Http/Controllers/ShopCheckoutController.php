@@ -116,6 +116,7 @@ class ShopCheckoutController extends BaseController
     public function showPayment(): View|RedirectResponse
     {
         $checkout = session('checkout', []);
+
         $orderShippingId = (int)($checkout['order_shipping_id'] ?? 0);
         if ($orderShippingId <= 0) {
             return Redirect::route('shop.checkout.shipping');

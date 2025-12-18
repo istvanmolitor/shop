@@ -8,9 +8,7 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Molitor\Currency\Services\Price;
-use Molitor\Product\Models\Product;
-use Molitor\Shop\Repositories\CartProductRepositoryInterface;
-use Molitor\Shop\Services\Owner;
+use Molitor\Shop\Services\CartService;
 
 class HeaderCartComponent extends Component
 {
@@ -19,30 +17,19 @@ class HeaderCartComponent extends Component
     #[Computed]
     public function count(): int
     {
-        $cart = app(CartProductRepositoryInterface::class);
-        $owner = new Owner();
-        return $cart->count($owner);
+        return app(CartService::class)->count();
     }
 
     #[Computed]
     public function items()
     {
-        $cart = app(CartProductRepositoryInterface::class);
-        $owner = new Owner();
-        return $cart->getAllByOwner($owner);
+        return app(CartService::class)->getItems();
     }
 
     #[Computed]
     public function total(): Price
     {
-        $total = new Price(0, null);
-        foreach ($this->items as $item) {
-            /** @var Product $product */
-            $product = $item->product;
-            $price = $product->getPrice();
-            $total = $total->addition($price->multiple($item->quantity));
-        }
-        return $total;
+        return app(CartService::class)->getTotal();
     }
 
     public function render(): View

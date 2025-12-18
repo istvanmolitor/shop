@@ -7,7 +7,7 @@ namespace Molitor\Shop\Http\Livewire;
 use Livewire\Component;
 use Molitor\Shop\Repositories\CartProductRepositoryInterface;
 use Molitor\Shop\Models\CartProduct;
-use Molitor\Shop\Services\Owner;
+use Molitor\Shop\Services\CartService;
 
 class CartComponent extends Component
 {
@@ -17,10 +17,12 @@ class CartComponent extends Component
     public float $total = 0.0;
 
     protected CartProductRepositoryInterface $cart;
+    protected CartService $cartService;
 
-    public function boot(CartProductRepositoryInterface $cart): void
+    public function boot(CartProductRepositoryInterface $cart, CartService $cartService): void
     {
         $this->cart = $cart;
+        $this->cartService = $cartService;
     }
 
     public function mount(): void
@@ -30,12 +32,10 @@ class CartComponent extends Component
 
     protected function refreshItems(): void
     {
-        $this->items = $this->cart->getAllByOwner(new Owner());
-        $this->total = 0.0;
+        $this->items = $this->cartService->getItems();
+        $this->total = $this->cartService->getTotal()->price;
         $this->qty = [];
         foreach ($this->items as $item) {
-            $price = (float)($item->product->price ?? 0);
-            $this->total += $price * (int)$item->quantity;
             $this->qty[$item->id] = (int)$item->quantity;
         }
     }

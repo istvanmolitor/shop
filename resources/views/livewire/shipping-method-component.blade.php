@@ -44,6 +44,7 @@
                                 <livewire:dynamic-component
                                     :is="$this->selectedShippingTypeComponent"
                                     :shippingData="$shippingData"
+                                    :validationErrors="$shippingErrors"
                                     :key="'shipping-' . $selectedShippingId"
                                 />
                             </div>

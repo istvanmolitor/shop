@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Molitor\Shop\Http\Livewire;
 
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
-use Molitor\Order\Models\OrderShipping;
 use Molitor\Order\Services\ShippingHandler;
 use Illuminate\Support\Collection;
+use Molitor\Order\Services\ShippingType;
 
 class ShippingMethodComponent extends Component
 {
     public ?int $selectedShippingId = null;
     public array $shippingData = [];
+    public array $shippingErrors = [];
 
     protected OrderShippingRepositoryInterface $shippingRepository;
     protected ShippingHandler $shippingHandler;
@@ -32,10 +34,25 @@ class ShippingMethodComponent extends Component
         'selectedShippingId.exists' => 'A kiválasztott szállítási mód nem érvényes.',
     ];
 
-    public function boot(OrderShippingRepositoryInterface $shippingRepository, ShippingHandler $shippingHandler): void
+    public function boot(
+        OrderShippingRepositoryInterface $shippingRepository,
+        ShippingHandler $shippingHandler
+    ): void
     {
         $this->shippingRepository = $shippingRepository;
         $this->shippingHandler = $shippingHandler;
+    }
+
+    public function getShippingType(): ShippingType|null
+    {
+        if (!$this->selectedShippingId) {
+            return null;
+        }
+        $selectedMethod = $this->shippingMethods->firstWhere('id', $this->selectedShippingId);
+        if (!$selectedMethod || !$selectedMethod->type) {
+            return null;
+        }
+        return $this->shippingHandler->getShippingType($selectedMethod->type);
     }
 
     public function mount(): void
@@ -54,11 +71,9 @@ class ShippingMethodComponent extends Component
 
     public function updatedSelectedShippingId($value): void
     {
-        // Cast to int to ensure type safety
-        $this->selectedShippingId = $value ? (int)$value : null;
-
-        // Reset shipping data when changing shipping method
+        $this->selectedShippingId = (int)$value ?? null;
         $this->shippingData = [];
+        $this->shippingErrors = [];
     }
 
     public function handleShippingDataUpdate($data): void
@@ -66,46 +81,30 @@ class ShippingMethodComponent extends Component
         $this->shippingData = $data;
     }
 
-    public function getSelectedShippingTypeComponentProperty(): ?string
+    public function getSelectedShippingTypeComponentProperty(): string|null
     {
-        if (!$this->selectedShippingId) {
-            return null;
-        }
-
-        $selectedMethod = $this->shippingMethods->firstWhere('id', $this->selectedShippingId);
-
-        if (!$selectedMethod || !$selectedMethod->type) {
-            return null;
-        }
-
-        return $this->shippingHandler->getLivewireComponentName($selectedMethod->type);
+        $shippingType = $this->getShippingType();
+        return $shippingType->getLivewireComponent();
     }
 
     public function submit(): mixed
     {
         $this->validate();
 
-        // Validate shipping data based on selected shipping type
-        if ($this->selectedShippingId) {
-            $selectedMethod = $this->shippingMethods->firstWhere('id', $this->selectedShippingId);
+        $this->shippingErrors = [];
 
-            if ($selectedMethod && $selectedMethod->type) {
-                $shippingType = $this->shippingHandler->getShippingType($selectedMethod->type);
+        $shippinType = $this->getShippingType();
+        if ($shippinType) {
+            try {
+                $this->shippingData = $shippinType->validate($this->shippingData);
+            } catch (ValidationException $e) {
+                $this->shippingErrors = $e->errors();
 
-                if ($shippingType) {
-                    try {
-                        // Validate shipping data using the shipping type's validation rules
-                        $this->shippingData = $shippingType->validate($this->shippingData);
-                    } catch (\Illuminate\Validation\ValidationException $e) {
-                        // Map validation errors to shippingData.* format for proper display
-                        $errors = [];
-                        foreach ($e->errors() as $key => $messages) {
-                            $errors['shippingData.' . $key] = $messages;
-                        }
-
-                        throw \Illuminate\Validation\ValidationException::withMessages($errors);
-                    }
+                $errors = [];
+                foreach ($e->errors() as $key => $messages) {
+                    $errors['shippingData.' . $key] = $messages;
                 }
+                throw ValidationException::withMessages($errors);
             }
         }
 

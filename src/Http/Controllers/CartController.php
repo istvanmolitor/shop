@@ -6,35 +6,20 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\View\View;
-use Molitor\Currency\Services\Price;
 use Molitor\Product\Models\Product;
-use Molitor\Shop\Models\CartProduct;
-use Molitor\Shop\Repositories\CartProductRepositoryInterface;
-use Molitor\Shop\Services\Owner;
+use Molitor\Shop\Services\CartService;
 
 class CartController extends BaseController
 {
-    public function __construct(private readonly CartProductRepositoryInterface $cart)
+    public function __construct(private readonly CartService $cartService)
     {
     }
 
     public function index(): View
     {
-        $items = $this->cart->getAllByOwner(new Owner());
-
-        $total = new Price(0, null);
-
-        /** @var CartProduct $item */
-        foreach ($items as $item) {
-            /** @var Product $product */
-            $product = $item->product;
-            $price = $product->getPrice();
-            $total = $total->addition($price->multiple($item->quantity));
-        }
-
         return view('shop::cart.index', [
-            'items' => $items,
-            'total' => $total,
+            'items' => $this->cartService->getItems(),
+            'total' => $this->cartService->getTotal(),
         ]);
     }
 
@@ -48,7 +33,7 @@ class CartController extends BaseController
         $product = Product::query()->findOrFail($data['product_id']);
         $qty = (int)($data['quantity'] ?? 1);
 
-        $this->cart->addOrIncrement(new Owner(), $product->id, $qty);
+        $this->cartService->addProduct($product->id, $qty);
 
         return redirect()
             ->route('shop.cart.index')
