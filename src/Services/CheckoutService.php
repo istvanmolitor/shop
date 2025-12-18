@@ -11,6 +11,9 @@ class CheckoutService
     const SESSION_KEY = 'checkout';
     private int|null $shippingId = null;
     private array $shippingData = [];
+    private int|null $paymentId = null;
+    private array $billing = [];
+    private bool $billingSameAsShipping = false;
     private ShippingHandler $shippingHandler;
     private OrderShippingRepositoryInterface $shippingRepository;
 
@@ -24,12 +27,26 @@ class CheckoutService
         $this->update();
     }
 
+    public function save(): void
+    {
+        $checkout = session(static::SESSION_KEY, []);
+        $checkout['order_shipping_id'] = $this->shippingId;
+        $checkout['shipping_data'] = $this->shippingData;
+        $checkout['order_payment_id'] = $this->paymentId;
+        $checkout['billing'] = $this->billing;
+        $checkout['billing_same_as_shipping'] = $this->billingSameAsShipping;
+        session([static::SESSION_KEY => $checkout]);
+    }
+
     public function update(): void
     {
         $checkout = session(static::SESSION_KEY, []);
 
         $this->shippingId = isset($checkout['order_shipping_id']) ? (int)$checkout['order_shipping_id'] : null;
         $this->shippingData = $checkout['shipping_data'] ?? [];
+        $this->paymentId = isset($checkout['order_payment_id']) ? (int)$checkout['order_payment_id'] : null;
+        $this->billing = $checkout['billing'] ?? [];
+        $this->billingSameAsShipping = (bool)($checkout['billing_same_as_shipping'] ?? false);
     }
 
     public function getShippingId(): int|null
@@ -50,14 +67,6 @@ class CheckoutService
     public function setShippingData(array $shippingData): void
     {
         $this->shippingData = $shippingData;
-    }
-
-    public function save(): void
-    {
-        $checkout = session(static::SESSION_KEY, []);
-        $checkout['order_shipping_id'] = $this->shippingId;
-        $checkout['shipping_data'] = $this->shippingData;
-        session([static::SESSION_KEY => $checkout]);
     }
 
     public function getCheckoutData(): array
@@ -85,14 +94,59 @@ class CheckoutService
         return $this->shippingHandler->getShippingType($shippingMethod->type);
     }
 
-    public function validateShippingData(array $shippingData): array
+    public function setShipping(int $id, array $data): void
     {
-        $shippingType = $this->getShippingType();
+        $this->shippingId = $id;
+        $this->shippingData = $data;
+        $this->save();
+    }
 
-        if (!$shippingType) {
-            return $shippingData;
+    public function getPaymentId(): int|null
+    {
+        return $this->paymentId;
+    }
+
+    public function setPaymentId(int $paymentId): void
+    {
+        $this->paymentId = $paymentId;
+    }
+
+    public function getBilling(): array
+    {
+        return $this->billing;
+    }
+
+    public function setBilling(array $billing): void
+    {
+        $this->billing = $billing;
+    }
+
+    public function getBillingSameAsShipping(): bool
+    {
+        return $this->billingSameAsShipping;
+    }
+
+    public function setBillingSameAsShipping(bool $billingSameAsShipping): void
+    {
+        $this->billingSameAsShipping = $billingSameAsShipping;
+    }
+
+    public function setPayment(int $paymentId, array $billing, bool $billingSameAsShipping): void
+    {
+        $this->paymentId = $paymentId;
+        $this->billing = $billing;
+        $this->billingSameAsShipping = $billingSameAsShipping;
+        $this->save();
+    }
+
+    public function getShippingRoute(): string
+    {
+        if($this->shippingId) {
+            $shipping = $this->shippingRepository->getById($this->shippingId);
+            if($shipping) {
+                return route('shop.checkout.shipping.show', $shipping);
+            }
         }
-
-        return $shippingType->validate($shippingData);
+        return route('shop.checkout.shipping');
     }
 }

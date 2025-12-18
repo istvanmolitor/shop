@@ -16,7 +16,7 @@ use Molitor\Order\Repositories\OrderPaymentRepositoryInterface;
 use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
 use Molitor\Address\Models\Address;
 use Molitor\Shop\Http\Requests\CheckoutStoreRequest;
-use Molitor\Shop\Http\Requests\PaymentStepRequest;
+use Molitor\Shop\Services\CheckoutService;
 
 class ShopCheckoutController extends BaseController
 {
@@ -104,66 +104,19 @@ class ShopCheckoutController extends BaseController
     }
 
 
-    public function showPayment(): View|RedirectResponse
-    {
-        $checkout = session('checkout', []);
-
-        $orderShippingId = (int)($checkout['order_shipping_id'] ?? 0);
-        if ($orderShippingId <= 0) {
-            return Redirect::route('shop.checkout.shipping');
-        }
-
-        $customerRepository = app(CustomerRepositoryInterface::class);
-        $customer = $customerRepository->getByUser(Auth::user());
-        $customer?->loadMissing(['invoiceAddress']);
-
-        /** @var CountryRepositoryInterface $countryRepository */
-        $countryRepository = app(CountryRepositoryInterface::class);
-        /** @var OrderPaymentRepositoryInterface $paymentRepository */
-        $paymentRepository = app(OrderPaymentRepositoryInterface::class);
-        $paymentMethods = $paymentRepository->getByShippingId($orderShippingId);
-        if ($paymentMethods->isEmpty()) {
-            return Redirect::route('shop.checkout.shipping')
-                ->with('status', __('Ehhez a szállítási módhoz jelenleg nincs elérhető fizetési mód. Kérjük, válasszon másik szállítási módot.'));
-        }
-        return view('shop::checkout.payment', [
-            'customer' => $customer,
-            'invoiceAddress' => $customer?->invoiceAddress,
-            'countries' => $countryRepository->getAll(),
-            // Keep options for potential uses, but pass only those allowed for the selected shipping
-            'paymentOptions' => $paymentRepository->getOptionsByShippingId($orderShippingId),
-            'paymentMethods' => $paymentMethods,
-            'session' => $checkout,
-        ]);
-    }
-
-    public function storePayment(PaymentStepRequest $request): RedirectResponse
-    {
-        $data = $request->validated();
-        $checkout = session('checkout', []);
-        // Billing comes on payment step; allow using shipping as billing
-        $billingSame = (bool)($data['billing_same_as_shipping'] ?? false);
-        if ($billingSame) {
-            // Extract address from shipping_data if available
-            $shippingData = $checkout['shipping_data'] ?? [];
-            // For AddressShippingType, address is nested under 'address' key
-            $checkout['billing'] = $shippingData['address'] ?? $shippingData;
-        } else {
-            $checkout['billing'] = $data['billing'];
-        }
-        $checkout['billing_same_as_shipping'] = $billingSame;
-        $checkout['order_payment_id'] = $data['order_payment_id'];
-        session(['checkout' => $checkout]);
-        return Redirect::route('shop.checkout.finalize');
-    }
-
     public function showFinalize(): View|RedirectResponse
     {
-        $checkout = session('checkout', []);
-        if (!isset($checkout['order_shipping_id'])) {
+        /** @var CheckoutService $checkoutService */
+        $checkoutService = app(CheckoutService::class);
+
+        $shippingId = $checkoutService->getShippingId();
+        if (!$shippingId) {
             return Redirect::route('shop.checkout.shipping');
         }
-        if (!isset($checkout['billing'], $checkout['order_payment_id'])) {
+
+        $paymentId = $checkoutService->getPaymentId();
+        $billing = $checkoutService->getBilling();
+        if (!$paymentId || empty($billing)) {
             return Redirect::route('shop.checkout.payment');
         }
 
@@ -177,31 +130,39 @@ class ShopCheckoutController extends BaseController
 
         // Render shipping type view if available
         $shippingTypeView = null;
-        if (isset($checkout['order_shipping_id'], $checkout['shipping_data'])) {
+        $shippingData = $checkoutService->getShippingData();
+        if ($shippingId && !empty($shippingData)) {
             /** @var \Molitor\Order\Models\OrderShipping $shipping */
-            $shipping = \Molitor\Order\Models\OrderShipping::find($checkout['order_shipping_id']);
+            $shipping = \Molitor\Order\Models\OrderShipping::find($shippingId);
             if ($shipping && $shipping->type) {
                 /** @var \Molitor\Order\Services\ShippingHandler $handler */
                 $handler = app(\Molitor\Order\Services\ShippingHandler::class);
                 $shippingType = $handler->getShippingType($shipping->type);
                 if ($shippingType) {
-                    $shippingTypeView = $shippingType->view($checkout['shipping_data'])->render();
+                    $shippingTypeView = $shippingType->view($shippingData)->render();
                 }
             }
         }
 
+        $checkout = $checkoutService->getCheckoutData();
         return view('shop::checkout.finalize', [
             'data' => $checkout,
-            'paymentLabel' => $paymentOptions[$checkout['order_payment_id']] ?? null,
-            'shippingLabel' => $shippingOptions[$checkout['order_shipping_id']] ?? null,
+            'paymentLabel' => $paymentOptions[$paymentId] ?? null,
+            'shippingLabel' => $shippingOptions[$shippingId] ?? null,
             'shippingTypeView' => $shippingTypeView,
         ]);
     }
 
     public function placeOrder(): RedirectResponse
     {
-        $checkout = session('checkout', []);
-        if (!isset($checkout['billing'], $checkout['order_payment_id'], $checkout['order_shipping_id'])) {
+        /** @var CheckoutService $checkoutService */
+        $checkoutService = app(CheckoutService::class);
+
+        $shippingId = $checkoutService->getShippingId();
+        $paymentId = $checkoutService->getPaymentId();
+        $billing = $checkoutService->getBilling();
+
+        if (!$shippingId || !$paymentId || empty($billing)) {
             return Redirect::route('shop.checkout.shipping');
         }
 
@@ -217,13 +178,13 @@ class ShopCheckoutController extends BaseController
 
         /** @var Address $invoiceAddress */
         $invoiceAddress = $customer->invoiceAddress;
-        $invoiceAddress->fill($checkout['billing']);
+        $invoiceAddress->fill($billing);
         $invoiceAddress->save();
 
         /** @var Address $shippingAddress */
         $shippingAddress = $customer->shippingAddress;
         // Extract shipping address from shipping_data if available
-        $shippingData = $checkout['shipping_data'] ?? [];
+        $shippingData = $checkoutService->getShippingData();
         // For AddressShippingType, address is nested under 'address' key
         $shippingAddressData = $shippingData['address'] ?? $shippingData;
         $shippingAddress->fill($shippingAddressData);
@@ -235,13 +196,13 @@ class ShopCheckoutController extends BaseController
             'customer_id' => $customer->id,
             'currency_id' => $customer->currency_id,
             'order_status_id' => $status->id,
-            'order_payment_id' => $checkout['order_payment_id'],
-            'order_shipping_id' => $checkout['order_shipping_id'],
+            'order_payment_id' => $paymentId,
+            'order_shipping_id' => $shippingId,
             'invoice_address_id' => $invoiceAddress->id,
             'shipping_address_id' => $shippingAddress->id,
-            'shipping_data' => $checkout['shipping_data'] ?? null,
+            'shipping_data' => $shippingData ?: null,
             // Comment will be posted on finalize step; keep backward-compat with any session-stored value
-            'comment' => request()->input('comment', $checkout['comment'] ?? null),
+            'comment' => request()->input('comment', $checkoutService->getCheckoutData()['comment'] ?? null),
         ]);
 
         // Clear checkout session

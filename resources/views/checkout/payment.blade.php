@@ -20,27 +20,25 @@
         @csrf
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <h3 class="font-semibold mb-2">Fizetési mód</h3>
-                <div class="p-4 border rounded space-y-3">
+                <h3 class="font-semibold mb-4">Fizetési mód</h3>
+                <div class="space-y-4">
                     @php($selectedPaymentId = old('order_payment_id', data_get($session,'order_payment_id')))
                     @foreach(($paymentMethods ?? []) as $method)
                         @php($price = $method->getPrice()->exchangeDefault())
-                        <label class="flex items-start gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
-                            <input type="radio" name="order_payment_id" value="{{ $method->id }}" class="mt-1" @checked($selectedPaymentId == $method->id) required>
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between">
-                                    <span class="font-medium">{{ $method->name }}</span>
-                                    <span class="font-semibold text-gray-900">{{ $price }}</span>
-                                </div>
-                                @if($method->description)
-                                    <div class="text-sm text-gray-600 mt-1">{!! $method->description !!}</div>
-                                @endif
+                        <label class="block p-4 border rounded cursor-pointer hover:bg-gray-50 transition @if($selectedPaymentId == $method->id) border-emerald-600 bg-emerald-50 @endif">
+                            <input type="radio" name="order_payment_id" value="{{ $method->id }}" class="hidden" @checked($selectedPaymentId == $method->id) required>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-lg">{{ $method->name }}</span>
+                                <span class="font-semibold text-gray-900">{{ $price }}</span>
                             </div>
+                            @if($method->description)
+                                <div class="text-sm text-gray-600">{!! $method->description !!}</div>
+                            @endif
                         </label>
                     @endforeach
                 </div>
             </div>
-            <div class="md:col-span-2">
+            <div>
                 <h3 class="font-semibold mb-2">Számlázási adatok</h3>
                 <div class="p-4 border rounded space-y-3">
                     <label class="inline-flex items-center gap-2">
@@ -88,6 +86,7 @@
     </form>
     <script>
         (function(){
+            // Handle billing address toggle
             const cb = document.querySelector('input[name="billing_same_as_shipping"]');
             const box = document.querySelector('.billing-fields');
             function toggle(){
@@ -102,6 +101,25 @@
                 cb.addEventListener('change', toggle);
                 toggle();
             }
+
+            // Handle payment method selection styling
+            const paymentRadios = document.querySelectorAll('input[name="order_payment_id"]');
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    paymentRadios.forEach(r => {
+                        const label = r.closest('label');
+                        if(label) {
+                            label.classList.remove('border-emerald-600', 'bg-emerald-50');
+                            label.classList.add('border-gray-300');
+                        }
+                    });
+                    const selectedLabel = this.closest('label');
+                    if(selectedLabel) {
+                        selectedLabel.classList.remove('border-gray-300');
+                        selectedLabel.classList.add('border-emerald-600', 'bg-emerald-50');
+                    }
+                });
+            });
         })();
     </script>
 @endsection

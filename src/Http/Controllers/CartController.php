@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\View\View;
 use Molitor\Shop\Http\Requests\StoreCartRequest;
 use Molitor\Shop\Services\CartService;
+use Molitor\Shop\Services\CheckoutService;
 
 class CartController extends BaseController
 {
@@ -14,11 +15,12 @@ class CartController extends BaseController
     {
     }
 
-    public function index(): View
+    public function index(CheckoutService $checkoutService): View
     {
         return view('shop::cart.index', [
             'items' => $this->cartService->getItems(),
             'total' => $this->cartService->getTotal(),
+            'shippingRoute' => $checkoutService->getShippingRoute(),
         ]);
     }
 

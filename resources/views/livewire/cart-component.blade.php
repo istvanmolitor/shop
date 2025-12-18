@@ -76,13 +76,5 @@
                 </tfoot>
             </table>
         </div>
-        <div class="mt-4 flex items-center gap-3">
-            <a class="inline-flex items-center gap-2 border border-slate-300 px-3 py-2 rounded-md hover:bg-slate-50 no-underline" href="{{ route('shop.products.index') }}">Vissza a termékekhez</a>
-            @auth
-                <a class="inline-flex items-center gap-2 border border-emerald-600 bg-emerald-600 text-white px-3 py-2 rounded-md hover:bg-emerald-700 no-underline" href="{{ route('shop.checkout.show') }}">Tovább a megrendeléshez</a>
-            @else
-                <a class="inline-flex items-center gap-2 border border-emerald-600 text-emerald-700 px-3 py-2 rounded-md hover:bg-emerald-50 no-underline" href="{{ route('shop.login') }}">Bejelentkezés a megrendeléshez</a>
-            @endauth
-        </div>
     @endif
 </div>
