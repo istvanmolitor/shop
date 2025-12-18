@@ -96,9 +96,9 @@ class CartComponent extends Component
             return null;
         }
 
-        // Otherwise it's a database ID
+        $itemId = (int)$itemKey;
         foreach ($items as $item) {
-            if ($item->id === $itemKey) {
+            if ($item->id === $itemId) {
                 return $item;
             }
         }
