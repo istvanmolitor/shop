@@ -12,7 +12,6 @@ class CartComponent extends Component
 {
     public array $qty = [];
 
-    public $items; // Eloquent Collection (serialized by Livewire)
     public float $total = 0.0;
 
     protected CartService $cartService;
@@ -29,14 +28,19 @@ class CartComponent extends Component
 
     protected function refreshItems(): void
     {
-        $this->items = $this->cartService->getItems();
         $this->total = $this->cartService->getTotal()->price;
         $this->qty = [];
-        foreach ($this->items as $item) {
+        $items = $this->cartService->getItems();
+        foreach ($items as $item) {
             // Use product_id as key for session-based carts
             $key = $item->id ?? 'p_' . $item->product_id;
             $this->qty[$key] = (int)$item->quantity;
         }
+    }
+
+    protected function getItems()
+    {
+        return $this->cartService->getItems();
     }
 
     public function incrementQty($itemKey): void
@@ -79,10 +83,12 @@ class CartComponent extends Component
 
     protected function findOwnedItem($itemKey): ?CartProduct
     {
+        $items = $this->cartService->getItems();
+
         // If itemKey starts with 'p_', it's a session cart item (product_id)
         if (is_string($itemKey) && str_starts_with($itemKey, 'p_')) {
             $productId = (int)substr($itemKey, 2);
-            foreach ($this->items as $item) {
+            foreach ($items as $item) {
                 if ($item->product_id === $productId) {
                     return $item;
                 }
@@ -91,13 +97,19 @@ class CartComponent extends Component
         }
 
         // Otherwise it's a database ID
-        return CartProduct::query()
-            ->where('id', $itemKey)
-            ->first();
+        foreach ($items as $item) {
+            if ($item->id === $itemKey) {
+                return $item;
+            }
+        }
+
+        return null;
     }
 
     public function render()
     {
-        return view('shop::livewire.cart-component');
+        return view('shop::livewire.cart-component', [
+            'items' => $this->getItems(),
+        ]);
     }
 }
