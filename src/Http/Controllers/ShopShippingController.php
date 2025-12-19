@@ -68,7 +68,7 @@ class ShopShippingController extends BaseController
         $formTemplateData = array_merge([
             'shipping' => $shipping,
             'customer' => $customer,
-            'defaultValues' => $defaultValues,
+            'data' => $defaultValues,
         ], $shippingType->getFormTemplateData());
 
         return view('shop::checkout.shipping', [
