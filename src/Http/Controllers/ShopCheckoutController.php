@@ -115,9 +115,13 @@ class ShopCheckoutController extends BaseController
         }
 
         $paymentId = $checkoutService->getPaymentId();
-        $billing = $checkoutService->getBilling();
-        if (!$paymentId || empty($billing)) {
+        if (!$paymentId) {
             return Redirect::route('shop.checkout.payment');
+        }
+
+        $billing = $checkoutService->getBilling();
+        if (empty($billing)) {
+            return Redirect::route('shop.checkout.billing');
         }
 
         /** @var OrderPaymentRepositoryInterface $paymentRepository */
@@ -130,19 +134,6 @@ class ShopCheckoutController extends BaseController
 
         // Render shipping type view if available
         $shippingTypeView = null;
-        $shippingData = $checkoutService->getShippingData();
-        if ($shippingId && !empty($shippingData)) {
-            /** @var \Molitor\Order\Models\OrderShipping $shipping */
-            $shipping = \Molitor\Order\Models\OrderShipping::find($shippingId);
-            if ($shipping && $shipping->type) {
-                /** @var \Molitor\Order\Services\ShippingHandler $handler */
-                $handler = app(\Molitor\Order\Services\ShippingHandler::class);
-                $shippingType = $handler->getShippingType($shipping->type);
-                if ($shippingType) {
-                    $shippingTypeView = $shippingType->view($shippingData)->render();
-                }
-            }
-        }
 
         $checkout = $checkoutService->getCheckoutData();
         return view('shop::checkout.finalize', [

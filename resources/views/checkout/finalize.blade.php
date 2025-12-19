@@ -1,7 +1,7 @@
 @extends('shop::layouts.app')
 
 @section('title', 'Megrendelés – Véglegesítés')
-@section('page_title', 'Megrendelés – 3/3: Véglegesítés')
+@section('page_title', 'Megrendelés – 4/4: Véglegesítés')
 @section('page_subtitle')Ellenőrizze az adatait, majd küldje el a megrendelést.@endsection
 
 @section('content')
@@ -59,7 +59,7 @@
             <textarea id="comment" name="comment" rows="3" class="mt-1 block w-full border rounded p-2">{{ old('comment', data_get($data,'comment')) }}</textarea>
         </div>
         <div class="flex items-center justify-between">
-            <a href="{{ route('shop.checkout.payment') }}" class="text-gray-600">Vissza a 2. lépéshez</a>
+            <a href="{{ route('shop.checkout.billing') }}" class="text-gray-600">Vissza a 3. lépéshez</a>
             <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Megrendelés elküldése</button>
         </div>
     </form>

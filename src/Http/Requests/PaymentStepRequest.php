@@ -16,13 +16,6 @@ class PaymentStepRequest extends FormRequest
     {
         $orderShippingId = (int) data_get(session('checkout', []), 'order_shipping_id');
         return [
-            // Billing data provided on payment step; can be same as shipping
-            'billing_same_as_shipping' => ['nullable', 'boolean'],
-            'billing.name' => ['required_without:billing_same_as_shipping', 'string', 'max:255'],
-            'billing.country_id' => ['required_without:billing_same_as_shipping', 'integer', 'exists:countries,id'],
-            'billing.zip_code' => ['required_without:billing_same_as_shipping', 'string', 'max:32'],
-            'billing.city' => ['required_without:billing_same_as_shipping', 'string', 'max:255'],
-            'billing.address' => ['required_without:billing_same_as_shipping', 'string', 'max:255'],
 
             // Payment must be allowed for selected shipping
             'order_payment_id' => [

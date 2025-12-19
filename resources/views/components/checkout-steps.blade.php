@@ -1,5 +1,5 @@
 <nav aria-label="Checkout steps" class="mb-6">
-    <ol class="grid grid-cols-4 gap-2">
+    <ol class="grid grid-cols-5 gap-2">
         @foreach($getSteps() as $stepName => $step)
             <li class="min-w-0">
                 @if($step['is_completed'])
