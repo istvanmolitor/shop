@@ -74,18 +74,7 @@ class ShopCheckoutController extends BaseController
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
 
-        $shippingId = $checkoutService->getShippingId();
-        if (!$shippingId) {
-            return Redirect::route('shop.checkout.shipping');
-        }
-
-        $paymentId = $checkoutService->getPaymentId();
-        if (!$paymentId) {
-            return Redirect::route('shop.checkout.payment');
-        }
-
-        $invoice = $checkoutService->getInvoice();
-        if (empty($invoice)) {
+        if(!$checkoutService->isValid()) {
             return Redirect::route('shop.checkout.invoice');
         }
 
@@ -94,11 +83,13 @@ class ShopCheckoutController extends BaseController
         /** @var OrderShippingRepositoryInterface $shippingRepository */
         $shippingRepository = app(OrderShippingRepositoryInterface::class);
 
-        $paymentOptions = $paymentRepository->getOptions();
-        $shippingOptions = $shippingRepository->getOptions();
-
         // Render shipping type view if available
         $shippingTypeView = null;
+        $shippingType = $checkoutService->getShippingType();
+        if ($shippingType) {
+            $shippingData = $checkoutService->getShippingData();
+            $shippingTypeView = $shippingType->renderView($shippingData);
+        }
 
         // Get cart items and total
         /** @var \Molitor\Shop\Services\CartService $cartService */
@@ -107,13 +98,24 @@ class ShopCheckoutController extends BaseController
         $cartTotal = $cartService->getTotal();
 
         $checkout = $checkoutService->getCheckoutData();
+
+        // Get country name if country_id exists
+        $countryName = null;
+        if (isset($checkout['invoice']['country_id'])) {
+            /** @var CountryRepositoryInterface $countryRepository */
+            $countryRepository = app(CountryRepositoryInterface::class);
+            $country = $countryRepository->getById($checkout['invoice']['country_id']);
+            $countryName = $country ? (string)$country : null;
+        }
+
         return view('shop::checkout.finalize', [
             'data' => $checkout,
-            'paymentLabel' => $paymentOptions[$paymentId] ?? null,
-            'shippingLabel' => $shippingOptions[$shippingId] ?? null,
+            'paymentLabel' => (string)$checkoutService->getOrderPayment(),
+            'shippingLabel' => (string)$checkoutService->getOrderShipping(),
             'shippingTypeView' => $shippingTypeView,
             'cartItems' => $cartItems,
             'cartTotal' => $cartTotal,
+            'countryName' => $countryName,
         ]);
     }
 

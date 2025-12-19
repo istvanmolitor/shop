@@ -8,8 +8,10 @@ use Molitor\Address\Repositories\CountryRepositoryInterface;
 use Molitor\Customer\Models\Customer;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Order\Models\Order;
+use Molitor\Order\Models\OrderPayment;
 use Molitor\Order\Models\OrderShipping;
 use Molitor\Order\Models\OrderStatus;
+use Molitor\Order\Repositories\OrderPaymentRepositoryInterface;
 use Molitor\Order\Services\ShippingHandler;
 use Molitor\Order\Services\ShippingType;
 use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
@@ -140,6 +142,16 @@ class CheckoutService
         $this->paymentId = $paymentId;
     }
 
+    public function getOrderPayment(): OrderPayment|null
+    {
+        if(!$this->paymentId) {
+            return null;
+        }
+        /** @var OrderPaymentRepositoryInterface $paymentRepository */
+        $paymentRepository = app(OrderPaymentRepositoryInterface::class);
+        return $paymentRepository->getById($this->paymentId);
+    }
+
     public function savePayment(int $paymentId): void
     {
         $this->setPaymentId($paymentId);
@@ -196,7 +208,7 @@ class CheckoutService
 
     public function isValid(): bool
     {
-        return !$this->shippingId || !$this->paymentId || empty($this->invoice);
+        return $this->isCartReady() && $this->isShippingReady() && $this->isPaymentReady() && $this->isInvoiceReady();
     }
 
     /**
