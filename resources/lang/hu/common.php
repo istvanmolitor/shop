@@ -120,7 +120,7 @@ return [
         ],
         'shipping' => [
             'title' => 'Megrendelés – Szállítási adatok',
-            'page_title' => 'Megrendelés – 1/4: Szállítás',
+            'page_title' => 'Szállítás',
             'subtitle' => 'Adja meg a szállítási adatait és válassza ki a szállítási módot.',
             'method' => 'Szállítási mód',
             'data' => 'Szállítási adatok',
