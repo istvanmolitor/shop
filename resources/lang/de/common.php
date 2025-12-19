@@ -125,6 +125,16 @@ return [
             'continue_to_payment' => 'Weiter zur Zahlung',
             'validation_errors' => 'Bitte korrigieren Sie die folgenden Fehler:',
         ],
+        'invoice' => [
+            'title' => 'Rechnungsdetails',
+            'page_title' => 'Rechnungsdetails',
+            'subtitle' => 'Geben Sie Ihre Rechnungsdaten ein.',
+            'heading' => 'Rechnungsdetails',
+            'same_as_shipping' => 'Gleich wie Lieferadresse',
+            'select_country' => '– Land auswählen –',
+            'back_to_payment' => '← Zurück zu Schritt 2',
+            'continue_to_finalize' => 'Weiter zum Abschluss →',
+        ],
     ],
     'search' => [
         'submit' => 'Suchen',

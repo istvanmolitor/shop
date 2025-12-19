@@ -128,6 +128,16 @@ return [
             'continue_to_payment' => 'Tovább a fizetéshez',
             'validation_errors' => 'Kérjük, javítsa ki az alábbi hibákat:',
         ],
+        'invoice' => [
+            'title' => 'Számlázási adatok',
+            'page_title' => 'Számlázási adatok',
+            'subtitle' => 'Adja meg a számlázási adatait.',
+            'heading' => 'Számlázási adatok',
+            'same_as_shipping' => 'Megegyezik a szállítási címmel',
+            'select_country' => '– Válasszon országot –',
+            'back_to_payment' => '← Vissza a 2. lépéshez',
+            'continue_to_finalize' => 'Tovább a véglegesítéshez →',
+        ],
     ],
     'profile' => [
         'title' => 'Profil – Molitor Shop',

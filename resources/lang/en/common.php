@@ -129,6 +129,16 @@ return [
             'continue_to_payment' => 'Continue to payment',
             'validation_errors' => 'Please correct the following errors:',
         ],
+        'invoice' => [
+            'title' => 'Invoice details',
+            'page_title' => 'Invoice details',
+            'subtitle' => 'Enter your invoice details.',
+            'heading' => 'Invoice details',
+            'same_as_shipping' => 'Same as shipping address',
+            'select_country' => '– Select country –',
+            'back_to_payment' => '← Back to step 2',
+            'continue_to_finalize' => 'Continue to finalize →',
+        ],
     ],
     'profile' => [
         'title' => 'Profile – Molitor Shop',

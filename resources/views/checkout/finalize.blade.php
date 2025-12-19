@@ -1,7 +1,7 @@
 @extends('shop::layouts.app')
 
-@section('title', 'Megrendelés – Véglegesítés')
-@section('page_title', 'Megrendelés – 4/4: Véglegesítés')
+@section('title', 'Megrendelés véglegesítése')
+@section('page_title', 'Megrendelés véglegesítése')
 @section('page_subtitle')Ellenőrizze az adatait, majd küldje el a megrendelést.@endsection
 
 @section('content')
