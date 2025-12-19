@@ -15,11 +15,11 @@ class InvoiceStepRequest extends FormRequest
     {
         return [
             'invoice_same_as_shipping' => ['nullable', 'boolean'],
-            'invoice.name' => ['required_without:invoice_same_as_shipping', 'string', 'max:255'],
-            'invoice.country_id' => ['required_without:invoice_same_as_shipping', 'integer', 'exists:countries,id'],
-            'invoice.zip_code' => ['required_without:invoice_same_as_shipping', 'string', 'max:32'],
-            'invoice.city' => ['required_without:invoice_same_as_shipping', 'string', 'max:255'],
-            'invoice.address' => ['required_without:invoice_same_as_shipping', 'string', 'max:255'],
+            'name' => ['string', 'max:255'],
+            'country_id' => ['integer', 'exists:countries,id'],
+            'zip_code' => ['string', 'max:32'],
+            'city' => ['string', 'max:255'],
+            'address' => ['string', 'max:255'],
         ];
     }
 

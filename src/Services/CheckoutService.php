@@ -4,6 +4,7 @@ namespace Molitor\Shop\Services;
 
 use Illuminate\Support\Facades\Auth;
 use Molitor\Address\Models\Address;
+use Molitor\Address\Repositories\CountryRepositoryInterface;
 use Molitor\Customer\Models\Customer;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Order\Models\Order;
@@ -154,7 +155,13 @@ class CheckoutService
 
     public function getInvoice(): array
     {
-        return $this->invoice;
+        return $this->invoice ?? [
+            'name' => '',
+            'country_id' => app(CountryRepositoryInterface::class)->getDefault()->id,
+            'zip_code' => '',
+            'city' => '',
+            'address' => '',
+        ];
     }
 
     public function setInvoice(array $invoice): void

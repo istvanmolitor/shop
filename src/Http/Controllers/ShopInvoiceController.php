@@ -23,52 +23,39 @@ class ShopInvoiceController extends BaseController
     {
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
-
-        $shippingId = $checkoutService->getShippingId();
-        if (!$shippingId) {
-            return Redirect::route('shop.checkout.shipping');
-        }
-
-        $paymentId = $checkoutService->getPaymentId();
-        if (!$paymentId) {
+        if(!$checkoutService->isPaymentReady()) {
             return Redirect::route('shop.checkout.payment');
         }
-
-        $customerRepository = app(CustomerRepositoryInterface::class);
-        $customer = $customerRepository->getByUser(Auth::user());
 
         /** @var CountryRepositoryInterface $countryRepository */
         $countryRepository = app(CountryRepositoryInterface::class);
 
         return view('shop::checkout.invoice', [
-            'customer' => $customer,
-            'invoiceAddress' => $customer?->invoiceAddress,
-            'countries' => $countryRepository->getAll(),
-            'session' => $checkoutService->getCheckoutData(),
+            'countries' => $countryRepository->getOptions(),
+            'defaultCountryId' => $countryRepository->getDefaultId(),
+            'invoice' => $checkoutService->getInvoice(),
         ]);
     }
 
     public function store(InvoiceStepRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
-
-        // Invoice address can be same as shipping
-        $invoiceSame = (bool)($data['invoice_same_as_shipping'] ?? false);
-        $invoice = [];
-
-        if ($invoiceSame) {
-            // Extract address from shipping_data if available
-            $shippingData = $checkoutService->getShippingData();
-            // For AddressShippingType, address is nested under 'address' key
-            $invoice = $shippingData['address'] ?? $shippingData;
-        } else {
-            $invoice = $data['invoice'];
+        if(!$checkoutService->isPaymentReady()) {
+            return Redirect::route('shop.checkout.payment');
         }
 
-        $checkoutService->setInvoice($invoice);
+        $data = $request->validated();
+
+        $invoiceSame = (bool)($data['invoice_same_as_shipping'] ?? false);
+
+        $checkoutService->setInvoice([
+            'name' => $data['name'],
+            'country_id' => $data['country_id'],
+            'zip_code' => $data['zip_code'],
+            'city' => $data['city'],
+            'address' => $data['address'],
+        ]);
         $checkoutService->setInvoiceSameAsShipping($invoiceSame);
         $checkoutService->save();
 
