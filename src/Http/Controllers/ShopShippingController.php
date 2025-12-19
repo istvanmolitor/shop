@@ -16,26 +16,23 @@ use Molitor\Shop\Services\CheckoutService;
 
 class ShopShippingController extends BaseController
 {
+    private CheckoutService $checkoutService;
+
     public function __construct()
     {
         $this->middleware('auth');
+        $this->checkoutService = app(CheckoutService::class);
     }
 
-    public function index(CustomerRepositoryInterface $customerRepository, OrderShippingRepositoryInterface $shippingRepository, CheckoutService $checkoutService): View
+    public function index(CustomerRepositoryInterface $customerRepository, OrderShippingRepositoryInterface $shippingRepository): View|RedirectResponse
     {
-        $customer = $customerRepository->getByUser(Auth::user());
-        $shippingMethods = $shippingRepository->getAll();
-
-        $selectedShipping = null;
-        $shippingId = $checkoutService->getShippingId();
-        if ($shippingId) {
-            $selectedShipping = $shippingMethods->firstWhere('id', $shippingId);
+        if(!$this->checkoutService->isCartReady()) {
+            return Redirect::route('shop.cart.index');
         }
 
         return view('shop::checkout.shipping', [
-            'customer' => $customer,
-            'shippingMethods' => $shippingMethods,
-            'selectedShipping' => $selectedShipping,
+            'shippingMethods' => $shippingRepository->getAll(),
+            'selectedShipping' => $this->checkoutService->getOrderShipping(),
             'shippingType' => null,
             'shippingForm' => null
         ]);
@@ -43,13 +40,15 @@ class ShopShippingController extends BaseController
 
     public function show(
         OrderShipping $shipping,
-        CustomerRepositoryInterface $customerRepository,
         OrderShippingRepositoryInterface $shippingRepository,
         ShippingHandler $shippingHandler,
         CheckoutService $checkoutService
-    ): View
+    ): View|RedirectResponse
     {
-        $customer = $customerRepository->getByUser(Auth::user());
+        if(!$this->checkoutService->isCartReady()) {
+            return Redirect::route('shop.cart.index');
+        }
+
         $shippingMethods = $shippingRepository->getAll();
 
         $shippingType = $shippingHandler->getShippingType($shipping->type);
@@ -67,12 +66,10 @@ class ShopShippingController extends BaseController
         $formTemplate = $shippingType->getFormTemplate();
         $formTemplateData = array_merge([
             'shipping' => $shipping,
-            'customer' => $customer,
             'data' => $defaultValues,
         ], $shippingType->getFormTemplateData());
 
         return view('shop::checkout.shipping', [
-            'customer' => $customer,
             'action' => $shippingType->getAction() ?? route('shop.checkout.shipping.store', [$shipping]),
             'shippingMethods' => $shippingMethods,
             'selectedShipping' => $shipping,
@@ -83,6 +80,10 @@ class ShopShippingController extends BaseController
 
     public function store(OrderShipping $shipping, Request $request, ShippingHandler $shippingHandler): RedirectResponse
     {
+        if(!$this->checkoutService->isCartReady()) {
+            return Redirect::route('shop.cart.index');
+        }
+
         $shippingType = $shippingHandler->getShippingType($shipping->type);
         if(!$shippingType) {
             abort(404);
@@ -92,7 +93,7 @@ class ShopShippingController extends BaseController
 
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
-        $checkoutService->setShipping($shipping->id, $data);
+        $checkoutService->saveShipping($shipping->id, $data);
 
         return Redirect::route('shop.checkout.payment');
     }

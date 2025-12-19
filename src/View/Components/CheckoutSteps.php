@@ -8,6 +8,12 @@ use Molitor\Shop\Services\CheckoutService;
 
 class CheckoutSteps extends Component
 {
+    const STEP_CART = 'cart';
+    const STEP_SHIPPING = 'shipping';
+    const STEP_PAYMENT = 'payment';
+    const STEP_INVOICE = 'invoice';
+    const STEP_FINALIZE = 'finalize';
+
     /**
      * The current checkout step.
      */
@@ -27,36 +33,28 @@ class CheckoutSteps extends Component
      * The base steps configuration.
      */
     private array $baseSteps = [
-        'cart' => ['number' => 1, 'label' => 'shop::common.checkout.steps.cart'],
-        'shipping' => ['number' => 2, 'label' => 'shop::common.checkout.steps.shipping'],
-        'payment' => ['number' => 3, 'label' => 'shop::common.checkout.steps.payment'],
-        'invoice' => ['number' => 4, 'label' => 'shop::common.checkout.steps.invoice'],
-        'finalize' => ['number' => 5, 'label' => 'shop::common.checkout.steps.finalize'],
+        self::STEP_CART => ['number' => 1, 'label' => 'shop::common.checkout.steps.cart'],
+        self::STEP_SHIPPING => ['number' => 2, 'label' => 'shop::common.checkout.steps.shipping'],
+        self::STEP_PAYMENT => ['number' => 3, 'label' => 'shop::common.checkout.steps.payment'],
+        self::STEP_INVOICE => ['number' => 4, 'label' => 'shop::common.checkout.steps.invoice'],
+        self::STEP_FINALIZE => ['number' => 5, 'label' => 'shop::common.checkout.steps.finalize'],
     ];
 
     public function __construct(
-        string $current = 'cart',
-        array $links = []
+        private CheckoutService $checkoutService,
+        string $current = 'cart'
     )
     {
         $this->current = $current;
-
-        // Find the current step number based on the key
         $this->currentNumber = $this->getCurrentStepNumber();
 
-        /** @var CheckoutService $checkoutService */
-        $checkoutService = app(CheckoutService::class);
-
-        // Default routes for steps
-        $defaultLinks = [
-            'cart' => route('shop.cart.index'),
-            'shipping' => $checkoutService->getShippingRoute(),
-            'payment' => route('shop.checkout.payment'),
-            'invoice' => route('shop.checkout.invoice'),
-            'finalize' => route('shop.checkout.finalize'),
+        $this->links = [
+            self::STEP_CART => route('shop.cart.index'),
+            self::STEP_SHIPPING => $this->checkoutService->getShippingRoute(),
+            self::STEP_PAYMENT => route('shop.checkout.payment'),
+            self::STEP_INVOICE => route('shop.checkout.invoice'),
+            self::STEP_FINALIZE => route('shop.checkout.finalize'),
         ];
-
-        $this->links = array_merge($defaultLinks, $links);
     }
 
     /**
@@ -68,7 +66,7 @@ class CheckoutSteps extends Component
             return $this->baseSteps[$this->current]['number'];
         }
 
-        return 1; // Default to first step if not found
+        return 1;
     }
 
     /**
@@ -109,7 +107,19 @@ class CheckoutSteps extends Component
      */
     public function isCompleted(string $stepName): bool
     {
-        return $this->getNumberByStep($stepName) < $this->currentNumber;
+        if($stepName === self::STEP_SHIPPING) {
+            return $this->checkoutService->isCartReady();
+        }
+        elseif($stepName === self::STEP_PAYMENT) {
+            return $this->checkoutService->isShippingReady();
+        }
+        elseif($stepName === self::STEP_INVOICE) {
+            return $this->checkoutService->isPaymentReady();
+        }
+        elseif($stepName === self::STEP_FINALIZE) {
+            return $this->checkoutService->isInvoiceReady();
+        }
+        return true;
     }
 
     /**
