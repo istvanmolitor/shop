@@ -135,12 +135,20 @@ class ShopCheckoutController extends BaseController
         // Render shipping type view if available
         $shippingTypeView = null;
 
+        // Get cart items and total
+        /** @var \Molitor\Shop\Services\CartService $cartService */
+        $cartService = app(\Molitor\Shop\Services\CartService::class);
+        $cartItems = $cartService->getItems();
+        $cartTotal = $cartService->getTotal();
+
         $checkout = $checkoutService->getCheckoutData();
         return view('shop::checkout.finalize', [
             'data' => $checkout,
             'paymentLabel' => $paymentOptions[$paymentId] ?? null,
             'shippingLabel' => $shippingOptions[$shippingId] ?? null,
             'shippingTypeView' => $shippingTypeView,
+            'cartItems' => $cartItems,
+            'cartTotal' => $cartTotal,
         ]);
     }
 

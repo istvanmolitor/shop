@@ -52,9 +52,69 @@
     </div>
     @endif
 
+    <div class="mt-6">
+        <h3 class="font-semibold mb-2">Kosár tartalma</h3>
+        <div class="overflow-x-auto border rounded">
+            @if($cartItems->isEmpty())
+                <div class="p-4 text-slate-500">A kosara üres.</div>
+            @else
+                <table class="min-w-full">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="text-left p-3 border-b border-slate-200">Termék</th>
+                            <th class="text-right p-3 border-b border-slate-200">Egységár</th>
+                            <th class="text-right p-3 border-b border-slate-200">Mennyiség</th>
+                            <th class="text-right p-3 border-b border-slate-200">Részösszeg</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            /** @var \Molitor\Currency\Services\Price $grandTotal */
+                            $grandTotal = new \Molitor\Currency\Services\Price(0, null);
+                        @endphp
+                        @foreach($cartItems as $item)
+                            @php
+                                $product = $item->product;
+                                /** @var \Molitor\Currency\Services\Price $unitPrice */
+                                $unitPrice = $product->getPrice();
+                                $unitPriceDefault = $unitPrice->exchangeDefault();
+                                $lineSubtotal = $unitPrice->multiple((int)$item->quantity)->exchangeDefault();
+                                $grandTotal = $grandTotal->addition($lineSubtotal);
+                                $img = optional($product->productImages->first());
+                                $imgUrl = $img?->getSrc();
+                            @endphp
+                            <tr class="border-t border-slate-200">
+                                <td class="p-3">
+                                    <div class="flex items-center gap-3">
+                                        @php($fallback = asset('vendor/shop/product/noimage.png'))
+                                        @php($src = $imgUrl ?: $fallback)
+                                        <img class="w-12 h-12 object-cover rounded-md border border-slate-200" src="{{ $src }}" alt="{{ $product->name }}">
+                                        <div>
+                                            <div class="font-medium text-slate-900">{{ $product->name }}</div>
+                                            <div class="text-slate-500 text-xs">SKU: {{ $product->sku }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-3 text-right whitespace-nowrap">{{ $unitPriceDefault }}</td>
+                                <td class="p-3 text-right">{{ $item->quantity }}</td>
+                                <td class="p-3 text-right whitespace-nowrap font-medium">{{ $lineSubtotal }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-slate-50 border-t border-slate-200">
+                            <td class="p-3 font-semibold" colspan="3">Végösszeg</td>
+                            <td class="p-3 text-right font-bold">{{ $grandTotal->exchangeDefault() }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            @endif
+        </div>
+    </div>
+
     <form action="{{ route('shop.checkout.place') }}" method="post" class="mt-6">
         @csrf
-        <div class="mt-2">
+        <div class="mt-2 mb-3">
             <label for="comment" class="block text-sm font-medium text-gray-700">Megjegyzés</label>
             <textarea id="comment" name="comment" rows="3" class="mt-1 block w-full border rounded p-2">{{ old('comment', data_get($data,'comment')) }}</textarea>
         </div>
