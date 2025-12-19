@@ -1,15 +1,15 @@
 <nav aria-label="Checkout steps" class="mb-6">
     <ol class="grid grid-cols-4 gap-2">
-        @foreach($steps as $number => $step)
+        @foreach($getSteps() as $stepName => $step)
             <li class="min-w-0">
-                @if($isCompleted($number))
-                    <a href="{{ $links[$step['key']] ?? '#' }}" class="block {{ $getStepClasses($number) }}">
-                        <span class="{{ $getCircleClasses($number) }}">{{ $number }}</span>
+                @if($step['is_completed'])
+                    <a href="{{ $step['link'] }}" class="block {{ $getStepClasses($step['number']) }}">
+                        <span class="{{ $getCircleClasses($stepName) }}">{{ $step['number'] }}</span>
                         <span class="truncate">{{ $step['label'] }}</span>
                     </a>
                 @else
-                    <div class="{{ $getStepClasses($number) }}">
-                        <span class="{{ $getCircleClasses($number) }}">{{ $number }}</span>
+                    <div class="{{ $getStepClasses($stepName) }}">
+                        <span class="{{ $getCircleClasses($stepName) }}">{{ $step['number'] }}</span>
                         <span class="truncate">{{ $step['label'] }}</span>
                     </div>
                 @endif

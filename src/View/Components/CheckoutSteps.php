@@ -14,11 +14,6 @@ class CheckoutSteps extends Component
     public string $current;
 
     /**
-     * The steps configuration.
-     */
-    public array $steps;
-
-    /**
      * The links for each step.
      */
     public array $links;
@@ -28,6 +23,16 @@ class CheckoutSteps extends Component
      */
     public int $currentNumber;
 
+    /**
+     * The base steps configuration.
+     */
+    private array $baseSteps = [
+        'cart' => ['number' => 1, 'label' => 'shop::common.checkout.steps.cart'],
+        'shipping' => ['number' => 2, 'label' => 'shop::common.checkout.steps.shipping'],
+        'payment' => ['number' => 3, 'label' => 'shop::common.checkout.steps.payment'],
+        'finalize' => ['number' => 4, 'label' => 'shop::common.checkout.steps.finalize'],
+    ];
+
     public function __construct(
         string $current = 'cart',
         array $links = []
@@ -35,13 +40,8 @@ class CheckoutSteps extends Component
     {
         $this->current = $current;
 
-        // Define all steps with their configuration
-        $this->steps = [
-            1 => ['key' => 'cart', 'label' => __('shop::common.checkout.steps.cart')],
-            2 => ['key' => 'shipping', 'label' => __('shop::common.checkout.steps.shipping')],
-            3 => ['key' => 'payment', 'label' => __('shop::common.checkout.steps.payment')],
-            4 => ['key' => 'finalize', 'label' => __('shop::common.checkout.steps.finalize')],
-        ];
+        // Find the current step number based on the key
+        $this->currentNumber = $this->getCurrentStepNumber();
 
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
@@ -55,9 +55,6 @@ class CheckoutSteps extends Component
         ];
 
         $this->links = array_merge($defaultLinks, $links);
-
-        // Find the current step number based on the key
-        $this->currentNumber = $this->getCurrentStepNumber();
     }
 
     /**
@@ -65,43 +62,70 @@ class CheckoutSteps extends Component
      */
     private function getCurrentStepNumber(): int
     {
-        foreach ($this->steps as $number => $step) {
-            if ($step['key'] === $this->current) {
-                return $number;
-            }
+        if (isset($this->baseSteps[$this->current])) {
+            return $this->baseSteps[$this->current]['number'];
         }
 
         return 1; // Default to first step if not found
     }
 
     /**
+     * Get the steps configuration for the template.
+     */
+    public function getSteps(): array
+    {
+        $steps = [];
+
+        foreach ($this->baseSteps as $stepName => $step) {
+            $steps[$stepName] = [
+                'number' => $step['number'],
+                'label' => __($step['label']),
+                'is_completed' => $this->isCompleted($stepName),
+                'is_current' => $this->isCurrent($stepName),
+                'link' => $this->links[$stepName] ?? '#',
+            ];
+        }
+
+        return $steps;
+    }
+
+    public function getNumberByStep($stepName): int|null
+    {
+        return $this->baseSteps[$stepName]['number'] ?? null;
+    }
+
+    /**
      * Check if a step is the current step.
      */
-    public function isCurrent(int $number): bool
+    public function isCurrent(string $stepName): bool
     {
-        return $number === $this->currentNumber;
+        return $stepName === $this->current;
     }
 
     /**
      * Check if a step is completed.
      */
-    public function isCompleted(int $number): bool
+    public function isCompleted(string $stepName): bool
     {
-        return $number < $this->currentNumber;
+        return $this->getNumberByStep($stepName) < $this->currentNumber;
     }
 
     /**
      * Get the CSS classes for a step container.
      */
-    public function getStepClasses(int $number): string
+    public function getStepClasses(string $stepName): string
     {
+        if (!isset($this->baseSteps[$stepName])) {
+            return 'flex items-center gap-3 p-3 border rounded transition border-gray-200 bg-white text-gray-500';
+        }
+
         $baseClasses = 'flex items-center gap-3 p-3 border rounded transition';
 
-        if ($this->isCurrent($number)) {
+        if ($this->isCurrent($stepName)) {
             return $baseClasses . ' border-emerald-600 bg-emerald-50 text-emerald-800';
         }
 
-        if ($this->isCompleted($number)) {
+        if ($this->isCompleted($stepName)) {
             return $baseClasses . ' border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50';
         }
 
@@ -111,15 +135,19 @@ class CheckoutSteps extends Component
     /**
      * Get the CSS classes for a step circle.
      */
-    public function getCircleClasses(int $number): string
+    public function getCircleClasses(string $stepName): string
     {
+        if (!isset($this->baseSteps[$stepName])) {
+            return 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold bg-gray-100 text-gray-500';
+        }
+
         $baseClasses = 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold';
 
-        if ($this->isCurrent($number)) {
+        if ($this->isCurrent($stepName)) {
             return $baseClasses . ' bg-emerald-600 text-white';
         }
 
-        if ($this->isCompleted($number)) {
+        if ($this->isCompleted($stepName)) {
             return $baseClasses . ' bg-emerald-100 text-emerald-700';
         }
 
