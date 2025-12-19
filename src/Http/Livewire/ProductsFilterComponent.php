@@ -42,7 +42,7 @@ class ProductsFilterComponent extends Component
             'minPrice' => $this->minPrice,
             'maxPrice' => $this->maxPrice,
             'attributes' => $this->selectedOptions,
-        ])->to('molitor.shop.http.livewire.products-list-component');
+        ])->to('shop.products-list');
     }
 
     public function render(): View
