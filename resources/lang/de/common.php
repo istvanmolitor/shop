@@ -89,6 +89,8 @@ return [
             'product' => 'Produkt',
             'qty' => 'Menge',
             'unit_price' => 'Stückpreis',
+            'quantity' => 'Menge',
+            'subtotal' => 'Zwischensumme',
         ],
         'table' => [
             'code' => 'Code',
@@ -103,6 +105,10 @@ return [
         'note' => [
             'title' => 'Notiz',
         ],
+        'shipping_method' => 'Versandart',
+        'payment_method' => 'Zahlungsart',
+        'grand_total' => 'Gesamtsumme',
+        'sku' => 'SKU',
     ],
     'checkout' => [
         'name' => 'Name',

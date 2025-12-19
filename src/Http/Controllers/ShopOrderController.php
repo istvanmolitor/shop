@@ -37,7 +37,15 @@ class ShopOrderController extends BaseController
         $customer = $customerRepository->getByUser($request->user());
 
         $order = Order::query()
-            ->with(['orderItems.product', 'orderStatus', 'invoiceAddress', 'shippingAddress'])
+            ->with([
+                'orderItems.product.productImages',
+                'orderItems.currency',
+                'orderStatus',
+                'invoiceAddress.country',
+                'shippingAddress.country',
+                'orderPayment',
+                'orderShipping'
+            ])
             ->where('code', $code)
             ->where('customer_id', $customer->id)
             ->first();
