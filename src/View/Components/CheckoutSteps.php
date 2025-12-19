@@ -4,6 +4,7 @@ namespace Molitor\Shop\View\Components;
 
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View as ViewContract;
+use Molitor\Shop\Services\CheckoutService;
 
 class CheckoutSteps extends Component
 {
@@ -42,10 +43,13 @@ class CheckoutSteps extends Component
             4 => ['key' => 'finalize', 'label' => __('shop::common.checkout.steps.finalize')],
         ];
 
+        /** @var CheckoutService $checkoutService */
+        $checkoutService = app(CheckoutService::class);
+
         // Default routes for steps
         $defaultLinks = [
             'cart' => route('shop.cart.index'),
-            'shipping' => route('shop.checkout.shipping'),
+            'shipping' => $checkoutService->getShippingRoute(),
             'payment' => route('shop.checkout.payment'),
             'finalize' => route('shop.checkout.finalize'),
         ];

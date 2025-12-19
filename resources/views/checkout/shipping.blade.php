@@ -13,7 +13,7 @@
             <div class="space-y-4">
                 @foreach($shippingMethods as $method)
                     <a href="{{ route('shop.checkout.shipping.show', ['shipping' => $method->code]) }}"
-                       class="block p-4 border rounded hover:bg-gray-50 transition @if(isset($selectedShipping) && $selectedShipping->id == $method->id) border-emerald-600 bg-emerald-50 @endif">
+                       class="block p-4 border rounded hover:bg-gray-50 transition @if($selectedShipping?->id == $method->id) border-emerald-600 bg-emerald-50 @endif">
                         <div class="flex items-center justify-between mb-2">
                             <span class="font-medium text-lg">{{ $method->name }}</span>
                             <span class="font-semibold text-gray-900">{{ $method->getPrice()->exchangeDefault() }}</span>

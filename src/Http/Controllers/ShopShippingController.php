@@ -8,12 +8,10 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use Livewire\Attributes\Validate;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Order\Models\OrderShipping;
 use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
 use Molitor\Order\Services\ShippingHandler;
-use Molitor\Shop\Http\Requests\ShippingStepRequest;
 use Molitor\Shop\Services\CheckoutService;
 
 class ShopShippingController extends BaseController
@@ -23,14 +21,21 @@ class ShopShippingController extends BaseController
         $this->middleware('auth');
     }
 
-    public function index(CustomerRepositoryInterface $customerRepository, OrderShippingRepositoryInterface $shippingRepository): View
+    public function index(CustomerRepositoryInterface $customerRepository, OrderShippingRepositoryInterface $shippingRepository, CheckoutService $checkoutService): View
     {
         $customer = $customerRepository->getByUser(Auth::user());
         $shippingMethods = $shippingRepository->getAll();
 
+        $selectedShipping = null;
+        $shippingId = $checkoutService->getShippingId();
+        if ($shippingId) {
+            $selectedShipping = $shippingMethods->firstWhere('id', $shippingId);
+        }
+
         return view('shop::checkout.shipping', [
             'customer' => $customer,
             'shippingMethods' => $shippingMethods,
+            'selectedShipping' => $selectedShipping,
             'shippingType' => null,
             'shippingForm' => null
         ]);
@@ -70,6 +75,7 @@ class ShopShippingController extends BaseController
             'customer' => $customer,
             'action' => $shippingType->getAction() ?? route('shop.checkout.shipping.store', [$shipping]),
             'shippingMethods' => $shippingMethods,
+            'selectedShipping' => $shipping,
             'shippingType' => $shippingType,
             'shippingForm' => view($formTemplate, $formTemplateData)->render(),
         ]);
