@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Address\Repositories\CountryRepositoryInterface;
-use Molitor\Shop\Http\Requests\BillingStepRequest;
+use Molitor\Shop\Http\Requests\InvoiceStepRequest;
 use Molitor\Shop\Services\CheckoutService;
 
-class ShopBillingController extends BaseController
+class ShopInvoiceController extends BaseController
 {
     public function __construct()
     {
@@ -40,7 +40,7 @@ class ShopBillingController extends BaseController
         /** @var CountryRepositoryInterface $countryRepository */
         $countryRepository = app(CountryRepositoryInterface::class);
 
-        return view('shop::checkout.billing', [
+        return view('shop::checkout.invoice', [
             'customer' => $customer,
             'invoiceAddress' => $customer?->invoiceAddress,
             'countries' => $countryRepository->getAll(),
@@ -48,28 +48,28 @@ class ShopBillingController extends BaseController
         ]);
     }
 
-    public function store(BillingStepRequest $request): RedirectResponse
+    public function store(InvoiceStepRequest $request): RedirectResponse
     {
         $data = $request->validated();
 
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
 
-        // Billing address can be same as shipping
-        $billingSame = (bool)($data['billing_same_as_shipping'] ?? false);
-        $billing = [];
+        // Invoice address can be same as shipping
+        $invoiceSame = (bool)($data['invoice_same_as_shipping'] ?? false);
+        $invoice = [];
 
-        if ($billingSame) {
+        if ($invoiceSame) {
             // Extract address from shipping_data if available
             $shippingData = $checkoutService->getShippingData();
             // For AddressShippingType, address is nested under 'address' key
-            $billing = $shippingData['address'] ?? $shippingData;
+            $invoice = $shippingData['address'] ?? $shippingData;
         } else {
-            $billing = $data['billing'];
+            $invoice = $data['invoice'];
         }
 
-        $checkoutService->setBilling($billing);
-        $checkoutService->setBillingSameAsShipping($billingSame);
+        $checkoutService->setInvoice($invoice);
+        $checkoutService->setInvoiceSameAsShipping($invoiceSame);
         $checkoutService->save();
 
         return Redirect::route('shop.checkout.finalize');

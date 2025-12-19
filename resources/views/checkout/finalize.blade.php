@@ -10,12 +10,12 @@
         <div>
             <h3 class="font-semibold mb-2">Számlázási adatok</h3>
             <div class="p-4 border rounded text-sm space-y-1">
-                <div><span class="text-gray-500">Név:</span> {{ data_get($data,'billing.name') }}</div>
-                <div><span class="text-gray-500">Ország ID:</span> {{ data_get($data,'billing.country_id') }}</div>
-                <div><span class="text-gray-500">Irányítószám:</span> {{ data_get($data,'billing.zip_code') }}</div>
-                <div><span class="text-gray-500">Város:</span> {{ data_get($data,'billing.city') }}</div>
-                <div><span class="text-gray-500">Cím:</span> {{ data_get($data,'billing.address') }}</div>
-                @if(data_get($data,'billing_same_as_shipping'))
+                <div><span class="text-gray-500">Név:</span> {{ data_get($data,'invoice.name') }}</div>
+                <div><span class="text-gray-500">Ország ID:</span> {{ data_get($data,'invoice.country_id') }}</div>
+                <div><span class="text-gray-500">Irányítószám:</span> {{ data_get($data,'invoice.zip_code') }}</div>
+                <div><span class="text-gray-500">Város:</span> {{ data_get($data,'invoice.city') }}</div>
+                <div><span class="text-gray-500">Cím:</span> {{ data_get($data,'invoice.address') }}</div>
+                @if(data_get($data,'invoice_same_as_shipping'))
                     <div class="text-gray-500">(Megegyezik a szállítási címmel)</div>
                 @endif
             </div>
@@ -59,7 +59,7 @@
             <textarea id="comment" name="comment" rows="3" class="mt-1 block w-full border rounded p-2">{{ old('comment', data_get($data,'comment')) }}</textarea>
         </div>
         <div class="flex items-center justify-between">
-            <a href="{{ route('shop.checkout.billing') }}" class="text-gray-600">Vissza a 3. lépéshez</a>
+            <a href="{{ route('shop.checkout.invoice') }}" class="text-gray-600">Vissza a 3. lépéshez</a>
             <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Megrendelés elküldése</button>
         </div>
     </form>

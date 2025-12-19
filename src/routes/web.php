@@ -8,7 +8,7 @@ use Molitor\Shop\Http\Controllers\ShopProfileController;
 use Molitor\Shop\Http\Controllers\ShopCheckoutController;
 use Molitor\Shop\Http\Controllers\ShopShippingController;
 use Molitor\Shop\Http\Controllers\ShopPaymentController;
-use Molitor\Shop\Http\Controllers\ShopBillingController;
+use Molitor\Shop\Http\Controllers\ShopInvoiceController;
 use Molitor\Shop\Http\Controllers\ShopOrderController;
 use Molitor\Shop\Http\Controllers\ShopCategoryController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -42,8 +42,8 @@ Route::middleware('web')->group(function () {
         Route::post('/shop/checkout/shipping/{shipping:code}', [ShopShippingController::class, 'store'])->name('shop.checkout.shipping.store');
         Route::get('/shop/checkout/payment', [ShopPaymentController::class, 'show'])->name('shop.checkout.payment');
         Route::post('/shop/checkout/payment', [ShopPaymentController::class, 'store'])->name('shop.checkout.payment.store');
-        Route::get('/shop/checkout/billing', [ShopBillingController::class, 'show'])->name('shop.checkout.billing');
-        Route::post('/shop/checkout/billing', [ShopBillingController::class, 'store'])->name('shop.checkout.billing.store');
+        Route::get('/shop/checkout/invoice', [ShopInvoiceController::class, 'show'])->name('shop.checkout.invoice');
+        Route::post('/shop/checkout/invoice', [ShopInvoiceController::class, 'store'])->name('shop.checkout.invoice.store');
         Route::get('/shop/checkout/finalize', [ShopCheckoutController::class, 'showFinalize'])->name('shop.checkout.finalize');
         Route::post('/shop/checkout/place', [ShopCheckoutController::class, 'placeOrder'])->name('shop.checkout.place');
 

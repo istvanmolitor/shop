@@ -55,7 +55,7 @@ class ShopPaymentController extends BaseController
         $checkoutService->setPaymentId($data['order_payment_id']);
         $checkoutService->save();
 
-        return Redirect::route('shop.checkout.billing');
+        return Redirect::route('shop.checkout.invoice');
     }
 }
 

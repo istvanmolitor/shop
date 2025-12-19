@@ -221,13 +221,8 @@ return [
         'shipping_address' => 'Lieferadresse',
 
         // Checkout & Payment
-        'billing.name' => 'Rechnungsname',
-        'billing.country_id' => 'Rechnungsland',
-        'billing.zip_code' => 'Rechnungs-PLZ',
-        'billing.city' => 'Rechnungsstadt',
-        'billing.address' => 'Rechnungsadresse',
-        'billing_same_as_shipping' => 'Rechnungsadresse gleich Lieferadresse',
-        'shipping_same_as_billing' => 'Lieferadresse gleich Rechnungsadresse',
+        'invoice_same_as_shipping' => 'Rechnungsadresse gleich Lieferadresse',
+        'shipping_same_as_invoice' => 'Lieferadresse gleich Rechnungsadresse',
         'order_payment_id' => 'Zahlungsart',
         'order_shipping_id' => 'Versandart',
         'comment' => 'Kommentar',

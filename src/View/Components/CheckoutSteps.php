@@ -30,7 +30,7 @@ class CheckoutSteps extends Component
         'cart' => ['number' => 1, 'label' => 'shop::common.checkout.steps.cart'],
         'shipping' => ['number' => 2, 'label' => 'shop::common.checkout.steps.shipping'],
         'payment' => ['number' => 3, 'label' => 'shop::common.checkout.steps.payment'],
-        'billing' => ['number' => 4, 'label' => 'shop::common.checkout.steps.billing'],
+        'invoice' => ['number' => 4, 'label' => 'shop::common.checkout.steps.invoice'],
         'finalize' => ['number' => 5, 'label' => 'shop::common.checkout.steps.finalize'],
     ];
 
@@ -52,7 +52,7 @@ class CheckoutSteps extends Component
             'cart' => route('shop.cart.index'),
             'shipping' => $checkoutService->getShippingRoute(),
             'payment' => route('shop.checkout.payment'),
-            'billing' => route('shop.checkout.billing'),
+            'invoice' => route('shop.checkout.invoice'),
             'finalize' => route('shop.checkout.finalize'),
         ];
 

@@ -12,8 +12,8 @@ class CheckoutService
     private int|null $shippingId = null;
     private array $shippingData = [];
     private int|null $paymentId = null;
-    private array $billing = [];
-    private bool $billingSameAsShipping = false;
+    private array $invoice = [];
+    private bool $invoiceSameAsShipping = false;
     private ShippingHandler $shippingHandler;
     private OrderShippingRepositoryInterface $shippingRepository;
 
@@ -33,8 +33,8 @@ class CheckoutService
         $checkout['order_shipping_id'] = $this->shippingId;
         $checkout['shipping_data'] = $this->shippingData;
         $checkout['order_payment_id'] = $this->paymentId;
-        $checkout['billing'] = $this->billing;
-        $checkout['billing_same_as_shipping'] = $this->billingSameAsShipping;
+        $checkout['invoice'] = $this->invoice;
+        $checkout['invoice_same_as_shipping'] = $this->invoiceSameAsShipping;
         session([static::SESSION_KEY => $checkout]);
     }
 
@@ -45,8 +45,8 @@ class CheckoutService
         $this->shippingId = isset($checkout['order_shipping_id']) ? (int)$checkout['order_shipping_id'] : null;
         $this->shippingData = $checkout['shipping_data'] ?? [];
         $this->paymentId = isset($checkout['order_payment_id']) ? (int)$checkout['order_payment_id'] : null;
-        $this->billing = $checkout['billing'] ?? [];
-        $this->billingSameAsShipping = (bool)($checkout['billing_same_as_shipping'] ?? false);
+        $this->invoice = $checkout['invoice'] ?? [];
+        $this->invoiceSameAsShipping = (bool)($checkout['invoice_same_as_shipping'] ?? false);
     }
 
     public function getShippingId(): int|null
@@ -111,31 +111,31 @@ class CheckoutService
         $this->paymentId = $paymentId;
     }
 
-    public function getBilling(): array
+    public function getInvoice(): array
     {
-        return $this->billing;
+        return $this->invoice;
     }
 
-    public function setBilling(array $billing): void
+    public function setInvoice(array $invoice): void
     {
-        $this->billing = $billing;
+        $this->invoice = $invoice;
     }
 
-    public function getBillingSameAsShipping(): bool
+    public function getInvoiceSameAsShipping(): bool
     {
-        return $this->billingSameAsShipping;
+        return $this->invoiceSameAsShipping;
     }
 
-    public function setBillingSameAsShipping(bool $billingSameAsShipping): void
+    public function setInvoiceSameAsShipping(bool $invoiceSameAsShipping): void
     {
-        $this->billingSameAsShipping = $billingSameAsShipping;
+        $this->invoiceSameAsShipping = $invoiceSameAsShipping;
     }
 
-    public function setPayment(int $paymentId, array $billing, bool $billingSameAsShipping): void
+    public function setPayment(int $paymentId, array $invoice, bool $invoiceSameAsShipping): void
     {
         $this->paymentId = $paymentId;
-        $this->billing = $billing;
-        $this->billingSameAsShipping = $billingSameAsShipping;
+        $this->invoice = $invoice;
+        $this->invoiceSameAsShipping = $invoiceSameAsShipping;
         $this->save();
     }
 

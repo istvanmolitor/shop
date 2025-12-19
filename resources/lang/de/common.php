@@ -80,7 +80,7 @@ return [
         'status_label' => 'Status:',
         'page_title' => 'Bestellung :code',
         'address' => [
-            'billing' => 'Rechnungsadresse',
+            'invoice' => 'Rechnungsadresse',
             'shipping' => 'Lieferadresse',
         ],
         'items' => [
@@ -111,7 +111,7 @@ return [
             'cart' => 'Warenkorb',
             'shipping' => 'Versand',
             'payment' => 'Zahlung',
-            'billing' => 'Rechnung',
+            'invoice' => 'Rechnung',
             'finalize' => 'Bestellung',
             'legend' => 'Schritte: Warenkorb → Versand → Zahlung → Rechnung → Bestellung',
         ],

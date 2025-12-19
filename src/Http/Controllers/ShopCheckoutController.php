@@ -63,18 +63,18 @@ class ShopCheckoutController extends BaseController
             $status = OrderStatus::query()->firstOrFail();
         }
 
-        // Update/Create invoice (billing) address on customer
+        // Update/Create invoice address on customer
         /** @var Address $invoiceAddress */
         $invoiceAddress = $customer->invoiceAddress;
-        $invoiceAddress->fill($validated['billing']);
+        $invoiceAddress->fill($validated['invoice']);
         $invoiceAddress->save();
 
         // Update/Create shipping address on customer
-        $shippingSame = (bool)($validated['shipping_same_as_billing'] ?? false);
+        $shippingSame = (bool)($validated['shipping_same_as_invoice'] ?? false);
         /** @var Address $shippingAddress */
         $shippingAddress = $customer->shippingAddress;
         if ($shippingSame) {
-            $shippingAddress->fill($validated['billing']);
+            $shippingAddress->fill($validated['invoice']);
         } else {
             $shippingAddress->fill($validated['shipping'] ?? []);
         }
@@ -119,9 +119,9 @@ class ShopCheckoutController extends BaseController
             return Redirect::route('shop.checkout.payment');
         }
 
-        $billing = $checkoutService->getBilling();
-        if (empty($billing)) {
-            return Redirect::route('shop.checkout.billing');
+        $invoice = $checkoutService->getInvoice();
+        if (empty($invoice)) {
+            return Redirect::route('shop.checkout.invoice');
         }
 
         /** @var OrderPaymentRepositoryInterface $paymentRepository */
@@ -151,9 +151,9 @@ class ShopCheckoutController extends BaseController
 
         $shippingId = $checkoutService->getShippingId();
         $paymentId = $checkoutService->getPaymentId();
-        $billing = $checkoutService->getBilling();
+        $invoice = $checkoutService->getInvoice();
 
-        if (!$shippingId || !$paymentId || empty($billing)) {
+        if (!$shippingId || !$paymentId || empty($invoice)) {
             return Redirect::route('shop.checkout.shipping');
         }
 
@@ -169,7 +169,7 @@ class ShopCheckoutController extends BaseController
 
         /** @var Address $invoiceAddress */
         $invoiceAddress = $customer->invoiceAddress;
-        $invoiceAddress->fill($billing);
+        $invoiceAddress->fill($invoice);
         $invoiceAddress->save();
 
         /** @var Address $shippingAddress */

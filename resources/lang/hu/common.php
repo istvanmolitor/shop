@@ -83,7 +83,7 @@ return [
         'none' => 'Még nincs megrendelése.',
         'status_label' => 'Státusz:',
         'address' => [
-            'billing' => 'Számlázási cím',
+            'invoice' => 'Számlázási cím',
             'shipping' => 'Szállítási cím',
         ],
         'items' => [
@@ -114,7 +114,7 @@ return [
             'cart' => 'Kosár',
             'shipping' => 'Szállítás',
             'payment' => 'Fizetés',
-            'billing' => 'Számlázás',
+            'invoice' => 'Számlázás',
             'finalize' => 'Megrendelés',
             'legend' => 'Lépések: Kosár → Szállítás → Fizetés → Számlázás → Megrendelés',
         ],

@@ -84,7 +84,7 @@ return [
         'status_label' => 'Status:',
         'page_title' => 'Order :code',
         'address' => [
-            'billing' => 'Billing address',
+            'invoice' => 'Invoice address',
             'shipping' => 'Shipping address',
         ],
         'items' => [
@@ -115,9 +115,9 @@ return [
             'cart' => 'Cart',
             'shipping' => 'Shipping',
             'payment' => 'Payment',
-            'billing' => 'Billing',
+            'invoice' => 'Invoice',
             'finalize' => 'Order',
-            'legend' => 'Steps: Cart → Shipping → Payment → Billing → Order',
+            'legend' => 'Steps: Cart → Shipping → Payment → Invoice → Order',
         ],
         'shipping' => [
             'title' => 'Order – Shipping details',
