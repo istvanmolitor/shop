@@ -4,11 +4,9 @@ namespace Molitor\Shop\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Molitor\Address\Repositories\CountryRepositoryInterface;
-use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Order\Repositories\OrderPaymentRepositoryInterface;
 use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
 use Molitor\Shop\Http\Requests\CheckoutStoreRequest;
@@ -20,54 +18,6 @@ class ShopCheckoutController extends BaseController
     {
         $this->middleware('auth');
     }
-
-    public function show(): View
-    {
-        $customerRepository = app(CustomerRepositoryInterface::class);
-        $customer = $customerRepository->getByUser(Auth::user());
-        $customer?->loadMissing(['invoiceAddress', 'shippingAddress']);
-
-        /** @var CountryRepositoryInterface $countryRepository */
-        $countryRepository = app(CountryRepositoryInterface::class);
-        /** @var OrderPaymentRepositoryInterface $paymentRepository */
-        $paymentRepository = app(OrderPaymentRepositoryInterface::class);
-        /** @var OrderShippingRepositoryInterface $shippingRepository */
-        $shippingRepository = app(OrderShippingRepositoryInterface::class);
-
-        return view('shop::checkout.index', [
-            'customer' => $customer,
-            'invoiceAddress' => $customer?->invoiceAddress,
-            'shippingAddress' => $customer?->shippingAddress,
-            'countries' => $countryRepository->getAll(),
-            'paymentOptions' => $paymentRepository->getOptions(),
-            'shippingOptions' => $shippingRepository->getOptions(),
-        ]);
-    }
-
-    public function store(CheckoutStoreRequest $request): RedirectResponse
-    {
-        /** @var CheckoutService $checkoutService */
-        $checkoutService = app(CheckoutService::class);
-
-        try {
-            $validated = $request->validated();
-            $order = $checkoutService->createOrderFromRequest($validated, $request->input('comment'));
-
-            return Redirect::route('shop.products.index')
-                ->with('status', __('Megrendelés létrehozva: :code', ['code' => (string)$order]));
-        } catch (\Exception $e) {
-            return Redirect::back()
-                ->withInput()
-                ->withErrors(['error' => $e->getMessage()]);
-        }
-    }
-
-    // --- Wizard flow ---
-    public function redirectToWizard(): RedirectResponse
-    {
-        return Redirect::route('shop.checkout.shipping');
-    }
-
 
     public function showFinalize(): View|RedirectResponse
     {
@@ -119,20 +69,10 @@ class ShopCheckoutController extends BaseController
         ]);
     }
 
-    public function placeOrder(CheckoutService $checkoutService): RedirectResponse
+    public function store(CheckoutStoreRequest $request): RedirectResponse
     {
-        if (!$checkoutService->isValid()) {
-            return Redirect::route('shop.checkout.shipping');
-        }
-
-        try {
-            $order = $checkoutService->finalizeOrder(request()->input('comment'));
-
-            return Redirect::route('shop.products.index')
-                ->with('status', __('Megrendelés létrehozva: :code', ['code' => (string)$order]));
-        } catch (\Exception $e) {
-            return Redirect::route('shop.checkout.shipping')
-                ->withErrors(['error' => $e->getMessage()]);
-        }
+        /** @var CheckoutService $checkoutService */
+        $checkoutService = app(CheckoutService::class);
+        $checkoutService->store();
     }
 }

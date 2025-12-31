@@ -191,6 +191,17 @@ class CheckoutService
         $this->invoiceSameAsShipping = $invoiceSameAsShipping;
     }
 
+    public function createInvoiceAddress(): Address
+    {
+        $invoiceData = $this->getInvoice();
+
+        $address = new Address();
+        $address->fill($invoiceData);
+        $address->save();
+
+        return $address;
+    }
+
     /*************************************************/
 
     public function getShippingRoute(): string
@@ -211,72 +222,21 @@ class CheckoutService
         return $this->isCartReady() && $this->isShippingReady() && $this->isPaymentReady() && $this->isInvoiceReady();
     }
 
-    /**
-     * Finalize the order by creating it in the database
-     *
-     * @param string|null $comment Optional comment for the order
-     * @return Order The created order
-     * @throws \Exception If required checkout data is missing
-     */
-    public function finalizeOrder(?string $comment = null): Order
-    {
-        if (!$this->isValid()) {
-            throw new \Exception('Incomplete checkout data. Cannot finalize order.');
-        }
 
-        /** @var CustomerRepositoryInterface $customerRepository */
-        $customerRepository = app(CustomerRepositoryInterface::class);
-        $customer = $customerRepository->getByUser(Auth::user());
-        $customer->loadMissing(['invoiceAddress', 'shippingAddress', 'currency']);
-
-        // Determine default status
-        $status = OrderStatus::query()->where('code', 'ordered')->first();
-        if (!$status) {
-            $status = OrderStatus::query()->firstOrFail();
-        }
-
-        // Update invoice address
-        /** @var Address $invoiceAddress */
-        $invoiceAddress = $customer->invoiceAddress;
-        $invoiceAddress->fill($this->invoice);
-        $invoiceAddress->save();
-
-        // Update shipping address
-        /** @var Address $shippingAddress */
-        $shippingAddress = $customer->shippingAddress;
-        // For AddressShippingType, address is nested under 'address' key
-        $shippingAddressData = $this->shippingData['address'] ?? $this->shippingData;
-        $shippingAddress->fill($shippingAddressData);
-        $shippingAddress->save();
-
-        // Create the order
-        /** @var Order $order */
-        $order = Order::query()->create([
-            'is_closed' => false,
-            'customer_id' => $customer->id,
-            'currency_id' => $customer->currency_id,
-            'order_status_id' => $status->id,
-            'order_payment_id' => $this->paymentId,
-            'order_shipping_id' => $this->shippingId,
-            'invoice_address_id' => $invoiceAddress->id,
-            'shipping_address_id' => $shippingAddress->id,
-            'shipping_data' => $this->shippingData ?: null,
-            'comment' => $comment ?? $this->getCheckoutData()['comment'] ?? null,
-        ]);
-
-        return $order;
-    }
 
     /**
-     * Create order directly from validated request data (non-wizard flow)
+     * Create order from checkout session data
      *
-     * @param array $validated Validated request data
      * @param string|null $comment Optional comment for the order
      * @return Order The created order
      * @throws \Exception If order creation fails
      */
-    public function createOrderFromRequest(array $validated, ?string $comment = null): Order
+    public function store(?string $comment = null): Order
     {
+        if(!$this->isValid()) {
+            throw new \Exception('Invalid checkout data');
+        }
+
         /** @var CustomerRepositoryInterface $customerRepository */
         $customerRepository = app(CustomerRepositoryInterface::class);
         $customer = $customerRepository->getByUser(Auth::user());
@@ -288,20 +248,16 @@ class CheckoutService
             $status = OrderStatus::query()->firstOrFail();
         }
 
-        // Update/Create invoice address on customer
-        /** @var Address $invoiceAddress */
-        $invoiceAddress = $customer->invoiceAddress;
-        $invoiceAddress->fill($validated['invoice']);
-        $invoiceAddress->save();
+        // Create invoice address
+        $invoiceAddress = $this->createInvoiceAddress();
 
         // Update/Create shipping address on customer
-        $shippingSame = (bool)($validated['shipping_same_as_invoice'] ?? false);
         /** @var Address $shippingAddress */
         $shippingAddress = $customer->shippingAddress;
-        if ($shippingSame) {
-            $shippingAddress->fill($validated['invoice']);
+        if ($this->getInvoiceSameAsShipping()) {
+            $shippingAddress->fill($this->getInvoice());
         } else {
-            $shippingAddress->fill($validated['shipping'] ?? []);
+            $shippingAddress->fill($this->getShippingData());
         }
         $shippingAddress->save();
 
@@ -311,8 +267,8 @@ class CheckoutService
             'customer_id' => $customer->id,
             'currency_id' => $customer->currency_id,
             'order_status_id' => $status->id,
-            'order_payment_id' => $validated['order_payment_id'],
-            'order_shipping_id' => $validated['order_shipping_id'],
+            'order_payment_id' => $this->getPaymentId(),
+            'order_shipping_id' => $this->getShippingId(),
             'invoice_address_id' => $invoiceAddress->id,
             'shipping_address_id' => $shippingAddress->id,
             'comment' => $comment,
