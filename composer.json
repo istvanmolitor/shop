@@ -18,7 +18,8 @@
         "istvanmolitor/address": "*@dev",
         "istvanmolitor/currency": "*@dev",
         "istvanmolitor/language": "*@dev",
-        "istvanmolitor/stock": "*@dev"
+        "istvanmolitor/stock": "*@dev",
+        "livewire/livewire": "^3.0"
     },
     "autoload": {
         "psr-4": {

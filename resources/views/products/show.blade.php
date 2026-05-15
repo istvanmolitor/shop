@@ -13,13 +13,11 @@
         <a class="inline-flex items-center gap-1 font-medium text-slate-700 hover:text-slate-900 no-underline" href="{{ route('shop.products.index') }}">{{ __('shop::common.products.show.back') }}</a>
         @can('acl', 'product')
             <a
-                href="{{ \Molitor\Product\Filament\Resources\ProductResource::getUrl('edit', ['record' => $product]) }}"
+                href="{{ url('/admin/products/'.$product->getKey().'/edit') }}"
                 class="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 no-underline"
                 title="{{ __('shop::common.products.show.edit_title') }}"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM3 21h3.75L17.81 9.94l-3.75-3.75L3 17.25V21Z"/>
-                </svg>
+                <x-theme:icon name="pencil" class="w-5 h-5" />
             </a>
         @endcan
     </p>
@@ -38,9 +36,7 @@
                         <span>{{ $stock ?? 0 }} @if($product->productUnit){{ $product->productUnit->name }}@endif</span>
                         @if(!empty($inStock) && $inStock)
                             <span class="text-emerald-600" title="Raktáron">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l.861 2.073a1.75 1.75 0 0 0 1.287 1.04l2.23.364c1.164.19 1.636 1.62.79 2.466l-1.62 1.62c-.43.43-.62 1.053-.505 1.65l.431 2.207c.225 1.154-.987 2.05-2.038 1.46l-1.952-1.09a1.75 1.75 0 0 0-1.708 0l-1.952 1.09c-1.051.59-2.263-.306-2.038-1.46l.431-2.206a1.75 1.75 0 0 0-.505-1.651l-1.62-1.62c-.846-.846-.374-2.276.79-2.466l2.23-.364c.6-.098 1.11-.5 1.287-1.04l.861-2.073ZM9.53 12.47a.75.75 0 0 1 1.06 0l1.41 1.41 2.47-2.47a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-1.94-1.94a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                <x-theme:icon name="badge-check" class="w-5 h-5" />
                             </span>
                         @endif
                     </div>

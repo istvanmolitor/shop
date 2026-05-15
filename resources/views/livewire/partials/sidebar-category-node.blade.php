@@ -10,13 +10,9 @@
                     class="mr-1 inline-flex h-6 w-6 items-center justify-center rounded hover:bg-slate-100 text-slate-600"
                     aria-label="{{ $isOpen ? __('shop::common.categories.collapse') : __('shop::common.categories.expand') }}">
                 @if($isOpen)
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
-                        <path fill-rule="evenodd" d="M5 12a1 1 0 011-1h12a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
-                    </svg>
+                    <x-theme:icon name="minus" class="h-4 w-4" />
                 @else
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
-                        <path fill-rule="evenodd" d="M11 5a1 1 0 112 0v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6V5z" clip-rule="evenodd" />
-                    </svg>
+                    <x-theme:icon name="plus" class="h-4 w-4" />
                 @endif
             </button>
         @else
