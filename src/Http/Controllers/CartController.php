@@ -11,9 +11,7 @@ use Molitor\Shop\Services\CheckoutService;
 
 class CartController extends BaseController
 {
-    public function __construct(private readonly CartService $cartService)
-    {
-    }
+    public function __construct(private readonly CartService $cartService) {}
 
     public function index(CheckoutService $checkoutService): View
     {

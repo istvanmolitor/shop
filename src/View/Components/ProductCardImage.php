@@ -2,8 +2,8 @@
 
 namespace Molitor\Shop\View\Components;
 
-use Illuminate\View\Component;
 use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\View\Component;
 use Molitor\Product\Models\Product;
 
 class ProductCardImage extends Component
@@ -38,4 +38,3 @@ class ProductCardImage extends Component
         return view('shop::components.product-card-image');
     }
 }
-

@@ -13,9 +13,7 @@ class CartService
 {
     const SESSION_KEY = 'cart';
 
-    public function __construct(private readonly CartProductRepositoryInterface $cartRepository)
-    {
-    }
+    public function __construct(private readonly CartProductRepositoryInterface $cartRepository) {}
 
     /**
      * Get the current user (null if guest)
@@ -60,12 +58,12 @@ class CartService
 
         // Guest user - get from session
         $sessionCart = $this->getSessionCart();
-        $collection = new Collection();
+        $collection = new Collection;
 
         foreach ($sessionCart as $productId => $quantity) {
-            $cartProduct = new CartProduct();
-            $cartProduct->product_id = (int)$productId;
-            $cartProduct->quantity = (int)$quantity;
+            $cartProduct = new CartProduct;
+            $cartProduct->product_id = (int) $productId;
+            $cartProduct->quantity = (int) $quantity;
             $cartProduct->exists = false; // Mark as not persisted
 
             // Load the product relationship
@@ -114,10 +112,11 @@ class CartService
         }
         $this->setSessionCart($sessionCart);
 
-        $cartProduct = new CartProduct();
+        $cartProduct = new CartProduct;
         $cartProduct->product_id = $productId;
         $cartProduct->quantity = $sessionCart[$productId];
         $cartProduct->exists = false;
+
         return $cartProduct;
     }
 
@@ -140,6 +139,7 @@ class CartService
         $this->setSessionCart($sessionCart);
 
         $item->quantity = $quantity;
+
         return $item;
     }
 
@@ -148,6 +148,7 @@ class CartService
         // Authenticated user - delete from database via repository
         if ($item->exists) {
             $this->cartRepository->remove($item);
+
             return;
         }
 
@@ -164,6 +165,7 @@ class CartService
         // Authenticated user - clear database via repository
         if ($user !== null) {
             $this->cartRepository->clear($user);
+
             return;
         }
 
@@ -182,6 +184,7 @@ class CartService
 
         // Guest user - count from session
         $sessionCart = $this->getSessionCart();
+
         return array_sum($sessionCart);
     }
 
@@ -207,7 +210,7 @@ class CartService
 
         // Merge each product from session cart into database via repository
         foreach ($sessionCart as $productId => $quantity) {
-            $this->cartRepository->addOrIncrement($user, (int)$productId, (int)$quantity);
+            $this->cartRepository->addOrIncrement($user, (int) $productId, (int) $quantity);
         }
 
         // Clear session cart after merge

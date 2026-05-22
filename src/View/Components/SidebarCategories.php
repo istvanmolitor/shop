@@ -2,8 +2,9 @@
 
 namespace Molitor\Shop\View\Components;
 
-use Illuminate\View\Component;
 use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Support\Collection;
+use Illuminate\View\Component;
 use Molitor\Product\Repositories\ProductCategoryRepositoryInterface;
 
 class SidebarCategories extends Component
@@ -11,7 +12,7 @@ class SidebarCategories extends Component
     /**
      * The root categories to display in the sidebar.
      *
-     * @var \Illuminate\Support\Collection
+     * @var Collection
      */
     public $shopCategories;
 
@@ -19,7 +20,7 @@ class SidebarCategories extends Component
     {
         /** @var ProductCategoryRepositoryInterface $productCategoryRepository */
         $productCategoryRepository = app(ProductCategoryRepositoryInterface::class);
-        $this->shopCategories =  $productCategoryRepository->getRootProductCategories();
+        $this->shopCategories = $productCategoryRepository->getRootProductCategories();
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Molitor\Shop\Http\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Molitor\Product\Models\Product;
+use Molitor\Product\Models\ProductImage;
 
 class ProductGalleryComponent extends Component
 {
@@ -16,6 +17,7 @@ class ProductGalleryComponent extends Component
     public array $images = [];
 
     public int $currentIndex = 0;
+
     public bool $showLightbox = false;
 
     public function mount(int $productId): void
@@ -25,18 +27,18 @@ class ProductGalleryComponent extends Component
         }])->findOrFail($productId);
 
         $this->images = $product->productImages->map(function ($img) use ($product) {
-            /** @var \Molitor\Product\Models\ProductImage $img */
+            /** @var ProductImage $img */
             return [
                 'url' => $img->getSrc(),
                 'alt' => $product->name,
-                'is_main' => (bool)($img->is_main ?? false),
+                'is_main' => (bool) ($img->is_main ?? false),
             ];
         })->values()->all();
 
         // Set current index to main image if exists
-        $mainIndex = collect($this->images)->search(fn ($i) => !empty($i['is_main']));
+        $mainIndex = collect($this->images)->search(fn ($i) => ! empty($i['is_main']));
         if ($mainIndex !== false) {
-            $this->currentIndex = (int)$mainIndex;
+            $this->currentIndex = (int) $mainIndex;
         } else {
             $this->currentIndex = 0;
         }

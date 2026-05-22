@@ -2,8 +2,8 @@
 
 namespace Molitor\Shop\View\Components;
 
-use Illuminate\View\Component;
 use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\View\Component;
 use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
 use Molitor\Product\Models\Product;
 
@@ -22,8 +22,7 @@ class ProductCard extends Component
     public function __construct(
         private CurrencyRepositoryInterface $currencyRepository,
         Product $product
-    )
-    {
+    ) {
         $this->product = $product;
         $this->currency = $this->currencyRepository->getDefault()->code;
     }
@@ -36,4 +35,3 @@ class ProductCard extends Component
         return view('shop::components.product-card');
     }
 }
-

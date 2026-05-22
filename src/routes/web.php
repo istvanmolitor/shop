@@ -1,17 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Molitor\Shop\Http\Controllers\ShopProductController;
 use Molitor\Shop\Http\Controllers\CartController;
 use Molitor\Shop\Http\Controllers\ShopAuthController;
-use Molitor\Shop\Http\Controllers\ShopProfileController;
+use Molitor\Shop\Http\Controllers\ShopCategoryController;
 use Molitor\Shop\Http\Controllers\ShopCheckoutController;
-use Molitor\Shop\Http\Controllers\ShopShippingController;
-use Molitor\Shop\Http\Controllers\ShopPaymentController;
 use Molitor\Shop\Http\Controllers\ShopInvoiceController;
 use Molitor\Shop\Http\Controllers\ShopOrderController;
-use Molitor\Shop\Http\Controllers\ShopCategoryController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Molitor\Shop\Http\Controllers\ShopPaymentController;
+use Molitor\Shop\Http\Controllers\ShopProductController;
+use Molitor\Shop\Http\Controllers\ShopProfileController;
+use Molitor\Shop\Http\Controllers\ShopShippingController;
 
 Route::middleware('web')->group(function () {
     Route::get('/shop/products', [ShopProductController::class, 'index'])->name('shop.products.index');

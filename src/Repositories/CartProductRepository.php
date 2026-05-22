@@ -10,14 +10,12 @@ use Molitor\Shop\Models\CartProduct;
 
 class CartProductRepository implements CartProductRepositoryInterface
 {
-    public function __construct(private readonly CartProduct $model = new CartProduct())
-    {
-    }
+    public function __construct(private readonly CartProduct $model = new CartProduct) {}
 
     public function getAllByUser(?User $user): Collection
     {
         if ($user === null) {
-            return new Collection();
+            return new Collection;
         }
 
         return $this->model->newQuery()
@@ -51,14 +49,16 @@ class CartProductRepository implements CartProductRepositoryInterface
         if ($existing) {
             $existing->quantity += $qty;
             $existing->save();
+
             return $existing;
         }
 
-        $item = new CartProduct();
+        $item = new CartProduct;
         $item->user_id = $user->id;
         $item->product_id = $productId;
         $item->quantity = $qty;
         $item->save();
+
         return $item;
     }
 
@@ -72,6 +72,7 @@ class CartProductRepository implements CartProductRepositoryInterface
         } else {
             $item->save();
         }
+
         return $item;
     }
 

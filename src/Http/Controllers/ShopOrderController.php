@@ -2,12 +2,11 @@
 
 namespace Molitor\Shop\Http\Controllers;
 
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\View\View;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Order\Models\Order;
 
@@ -44,14 +43,14 @@ class ShopOrderController extends BaseController
                 'invoiceAddress.country',
                 'shippingAddress.country',
                 'orderPayment',
-                'orderShipping'
+                'orderShipping',
             ])
             ->where('code', $code)
             ->where('customer_id', $customer->id)
             ->first();
 
-        if (!$order) {
-            throw (new ModelNotFoundException())->setModel(Order::class);
+        if (! $order) {
+            throw (new ModelNotFoundException)->setModel(Order::class);
         }
 
         return view('shop::orders.show', [

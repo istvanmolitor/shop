@@ -3,19 +3,19 @@
 namespace Molitor\Shop\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Validation\ValidationException;
-use Molitor\Customer\Models\Customer;
-use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
-use Molitor\Language\Repositories\LanguageRepositoryInterface;
 use Molitor\Address\Repositories\AddressRepositoryInterface;
 use Molitor\Address\Repositories\CountryRepositoryInterface;
+use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
+use Molitor\Customer\Models\Customer;
+use Molitor\Language\Repositories\LanguageRepositoryInterface;
 use Molitor\Shop\Http\Requests\RegisterRequest;
 use Molitor\Shop\Services\CartService;
 
@@ -40,7 +40,7 @@ class ShopAuthController extends BaseController
 
             // Block unverified users from logging in
             $user = Auth::user();
-            if (method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail()) {
+            if (method_exists($user, 'hasVerifiedEmail') && ! $user->hasVerifiedEmail()) {
                 Auth::logout();
                 throw ValidationException::withMessages([
                     'email' => __('Kérjük, erősítse meg az e-mail címét a belépés előtt. Ellenőrizze a postafiókját.'),
@@ -67,6 +67,7 @@ class ShopAuthController extends BaseController
     {
         $countries = $countryRepository->getAll();
         $defaultCountryId = $countryRepository->getDefaultId();
+
         return view('shop::auth.register', compact('countries', 'defaultCountryId'));
     }
 
@@ -165,6 +166,7 @@ class ShopAuthController extends BaseController
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('shop.products.index');
     }
 }

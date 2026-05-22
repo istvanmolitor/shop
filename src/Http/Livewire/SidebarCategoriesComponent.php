@@ -13,12 +13,14 @@ class SidebarCategoriesComponent extends Component
 {
     /**
      * Root categories displayed in the sidebar.
+     *
      * @var Collection<int, mixed>
      */
     public Collection $shopCategories;
 
     /**
      * Expanded category IDs.
+     *
      * @var array<int, bool>
      */
     public array $expanded = [];
@@ -34,7 +36,7 @@ class SidebarCategoriesComponent extends Component
             // Normalize to [int => bool]
             $normalized = [];
             foreach ($saved as $key => $val) {
-                $normalized[(int)$key] = (bool)$val;
+                $normalized[(int) $key] = (bool) $val;
             }
             $this->expanded = $normalized;
         }
@@ -42,7 +44,7 @@ class SidebarCategoriesComponent extends Component
 
     public function toggleExpand(int $categoryId): void
     {
-        if (!empty($this->expanded[$categoryId])) {
+        if (! empty($this->expanded[$categoryId])) {
             unset($this->expanded[$categoryId]);
         } else {
             $this->expanded[$categoryId] = true;

@@ -31,4 +31,3 @@ class InvoiceStepRequest extends FormRequest
         return __('shop::validation.attributes');
     }
 }
-

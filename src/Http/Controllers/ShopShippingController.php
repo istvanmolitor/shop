@@ -5,7 +5,6 @@ namespace Molitor\Shop\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
@@ -26,7 +25,7 @@ class ShopShippingController extends BaseController
 
     public function index(CustomerRepositoryInterface $customerRepository, OrderShippingRepositoryInterface $shippingRepository): View|RedirectResponse
     {
-        if(!$this->checkoutService->isCartReady()) {
+        if (! $this->checkoutService->isCartReady()) {
             return Redirect::route('shop.cart.index');
         }
 
@@ -34,7 +33,7 @@ class ShopShippingController extends BaseController
             'shippingMethods' => $shippingRepository->getAll(),
             'selectedShipping' => $this->checkoutService->getOrderShipping(),
             'shippingType' => null,
-            'shippingForm' => null
+            'shippingForm' => null,
         ]);
     }
 
@@ -43,23 +42,21 @@ class ShopShippingController extends BaseController
         OrderShippingRepositoryInterface $shippingRepository,
         ShippingHandler $shippingHandler,
         CheckoutService $checkoutService
-    ): View|RedirectResponse
-    {
-        if(!$this->checkoutService->isCartReady()) {
+    ): View|RedirectResponse {
+        if (! $this->checkoutService->isCartReady()) {
             return Redirect::route('shop.cart.index');
         }
 
         $shippingMethods = $shippingRepository->getAll();
 
         $shippingType = $shippingHandler->getShippingType($shipping->type);
-        if(!$shippingType) {
+        if (! $shippingType) {
             abort(404);
         }
 
-        if($shipping->id === $checkoutService->getShippingId()) {
+        if ($shipping->id === $checkoutService->getShippingId()) {
             $defaultValues = $checkoutService->getShippingData();
-        }
-        else {
+        } else {
             $defaultValues = $shippingType->getDefaultValues();
         }
 
@@ -80,12 +77,12 @@ class ShopShippingController extends BaseController
 
     public function store(OrderShipping $shipping, Request $request, ShippingHandler $shippingHandler): RedirectResponse
     {
-        if(!$this->checkoutService->isCartReady()) {
+        if (! $this->checkoutService->isCartReady()) {
             return Redirect::route('shop.cart.index');
         }
 
         $shippingType = $shippingHandler->getShippingType($shipping->type);
-        if(!$shippingType) {
+        if (! $shippingType) {
             abort(404);
         }
 
@@ -98,4 +95,3 @@ class ShopShippingController extends BaseController
         return Redirect::route('shop.checkout.payment');
     }
 }
-

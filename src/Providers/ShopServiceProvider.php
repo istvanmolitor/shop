@@ -2,15 +2,14 @@
 
 namespace Molitor\Shop\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Molitor\Shop\Http\Livewire\CartComponent;
 use Molitor\Shop\Http\Livewire\HeaderCartComponent;
-use Molitor\Shop\Http\Livewire\ProductsListComponent;
 use Molitor\Shop\Http\Livewire\ProductGalleryComponent;
 use Molitor\Shop\Http\Livewire\ProductsFilterComponent;
+use Molitor\Shop\Http\Livewire\ProductsListComponent;
 use Molitor\Shop\Http\Livewire\SidebarCategoriesComponent;
 use Molitor\Shop\Repositories\CartProductRepository;
 use Molitor\Shop\Repositories\CartProductRepositoryInterface;
@@ -19,11 +18,11 @@ class ShopServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'shop');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'shop');
         // Register package translations under the "shop" namespace
-        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'shop');
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'shop');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
         // Register Blade component namespace for package components
         Blade::componentNamespace('Molitor\\Shop\\View\\Components', 'shop');
@@ -38,7 +37,7 @@ class ShopServiceProvider extends ServiceProvider
 
         // Publish public assets (e.g., fallback images) to public/vendor/shop
         $this->publishes([
-            __DIR__ . '/../../resources/assets' => public_path('vendor/shop'),
+            __DIR__.'/../../resources/assets' => public_path('vendor/shop'),
         ], 'public');
     }
 

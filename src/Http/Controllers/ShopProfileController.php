@@ -8,8 +8,8 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Molitor\Address\Repositories\AddressRepositoryInterface;
 use Molitor\Address\Repositories\CountryRepositoryInterface;
-use Molitor\Customer\Models\Customer;
 use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
+use Molitor\Customer\Models\Customer;
 use Molitor\Language\Repositories\LanguageRepositoryInterface;
 use Molitor\Shop\Http\Requests\ProfileUpdateRequest;
 
@@ -44,7 +44,7 @@ class ShopProfileController extends BaseController
             $user->save();
 
             $customer = Customer::query()->where('user_id', $user->id)->first();
-            if (!$customer) {
+            if (! $customer) {
                 $customer = Customer::create([
                     'name' => $data['customer_name'],
                     'internal_name' => $user->email,

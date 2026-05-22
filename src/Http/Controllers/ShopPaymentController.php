@@ -26,7 +26,7 @@ class ShopPaymentController extends BaseController
 
         $shippingId = $checkoutService->getShippingId();
 
-        if (!$shippingId) {
+        if (! $shippingId) {
             return Redirect::route('shop.checkout.shipping');
         }
 
@@ -58,4 +58,3 @@ class ShopPaymentController extends BaseController
         return Redirect::route('shop.checkout.invoice');
     }
 }
-

@@ -2,16 +2,20 @@
 
 namespace Molitor\Shop\View\Components;
 
-use Illuminate\View\Component;
 use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\View\Component;
 use Molitor\Shop\Services\CheckoutService;
 
 class CheckoutSteps extends Component
 {
     const STEP_CART = 'cart';
+
     const STEP_SHIPPING = 'shipping';
+
     const STEP_PAYMENT = 'payment';
+
     const STEP_INVOICE = 'invoice';
+
     const STEP_FINALIZE = 'finalize';
 
     /**
@@ -43,8 +47,7 @@ class CheckoutSteps extends Component
     public function __construct(
         private CheckoutService $checkoutService,
         string $current = 'cart'
-    )
-    {
+    ) {
         $this->current = $current;
         $this->currentNumber = $this->getCurrentStepNumber();
 
@@ -89,7 +92,7 @@ class CheckoutSteps extends Component
         return $steps;
     }
 
-    public function getNumberByStep($stepName): int|null
+    public function getNumberByStep($stepName): ?int
     {
         return $this->baseSteps[$stepName]['number'] ?? null;
     }
@@ -107,18 +110,16 @@ class CheckoutSteps extends Component
      */
     public function isCompleted(string $stepName): bool
     {
-        if($stepName === self::STEP_SHIPPING) {
+        if ($stepName === self::STEP_SHIPPING) {
             return $this->checkoutService->isCartReady();
-        }
-        elseif($stepName === self::STEP_PAYMENT) {
+        } elseif ($stepName === self::STEP_PAYMENT) {
             return $this->checkoutService->isShippingReady();
-        }
-        elseif($stepName === self::STEP_INVOICE) {
+        } elseif ($stepName === self::STEP_INVOICE) {
             return $this->checkoutService->isPaymentReady();
-        }
-        elseif($stepName === self::STEP_FINALIZE) {
+        } elseif ($stepName === self::STEP_FINALIZE) {
             return $this->checkoutService->isInvoiceReady();
         }
+
         return true;
     }
 
@@ -127,21 +128,21 @@ class CheckoutSteps extends Component
      */
     public function getStepClasses(string $stepName): string
     {
-        if (!isset($this->baseSteps[$stepName])) {
+        if (! isset($this->baseSteps[$stepName])) {
             return 'flex items-center gap-3 p-3 border rounded transition border-gray-200 bg-white text-gray-500';
         }
 
         $baseClasses = 'flex items-center gap-3 p-3 border rounded transition';
 
         if ($this->isCurrent($stepName)) {
-            return $baseClasses . ' border-emerald-600 bg-emerald-50 text-emerald-800';
+            return $baseClasses.' border-emerald-600 bg-emerald-50 text-emerald-800';
         }
 
         if ($this->isCompleted($stepName)) {
-            return $baseClasses . ' border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50';
+            return $baseClasses.' border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50';
         }
 
-        return $baseClasses . ' border-gray-200 bg-white text-gray-500';
+        return $baseClasses.' border-gray-200 bg-white text-gray-500';
     }
 
     /**
@@ -149,21 +150,21 @@ class CheckoutSteps extends Component
      */
     public function getCircleClasses(string $stepName): string
     {
-        if (!isset($this->baseSteps[$stepName])) {
+        if (! isset($this->baseSteps[$stepName])) {
             return 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold bg-gray-100 text-gray-500';
         }
 
         $baseClasses = 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold';
 
         if ($this->isCurrent($stepName)) {
-            return $baseClasses . ' bg-emerald-600 text-white';
+            return $baseClasses.' bg-emerald-600 text-white';
         }
 
         if ($this->isCompleted($stepName)) {
-            return $baseClasses . ' bg-emerald-100 text-emerald-700';
+            return $baseClasses.' bg-emerald-100 text-emerald-700';
         }
 
-        return $baseClasses . ' bg-gray-100 text-gray-500';
+        return $baseClasses.' bg-gray-100 text-gray-500';
     }
 
     /**
@@ -174,4 +175,3 @@ class CheckoutSteps extends Component
         return view('shop::components.checkout-steps');
     }
 }
-

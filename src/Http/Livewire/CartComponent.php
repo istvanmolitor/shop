@@ -33,8 +33,8 @@ class CartComponent extends Component
         $items = $this->cartService->getItems();
         foreach ($items as $item) {
             // Use product_id as key for session-based carts
-            $key = $item->id ?? 'p_' . $item->product_id;
-            $this->qty[$key] = (int)$item->quantity;
+            $key = $item->id ?? 'p_'.$item->product_id;
+            $this->qty[$key] = (int) $item->quantity;
         }
     }
 
@@ -46,8 +46,10 @@ class CartComponent extends Component
     public function incrementQty($itemKey): void
     {
         $item = $this->findOwnedItem($itemKey);
-        if (!$item) return;
-        $this->cartService->updateQuantity($item, ((int)$item->quantity) + 1);
+        if (! $item) {
+            return;
+        }
+        $this->cartService->updateQuantity($item, ((int) $item->quantity) + 1);
         $this->refreshItems();
         $this->dispatch('cart-updated');
     }
@@ -55,8 +57,10 @@ class CartComponent extends Component
     public function decrementQty($itemKey): void
     {
         $item = $this->findOwnedItem($itemKey);
-        if (!$item) return;
-        $new = ((int)$item->quantity) - 1;
+        if (! $item) {
+            return;
+        }
+        $new = ((int) $item->quantity) - 1;
         $this->cartService->updateQuantity($item, $new);
         $this->refreshItems();
         $this->dispatch('cart-updated');
@@ -64,9 +68,11 @@ class CartComponent extends Component
 
     public function saveQty($itemKey): void
     {
-        $value = (int)($this->qty[$itemKey] ?? 0);
+        $value = (int) ($this->qty[$itemKey] ?? 0);
         $item = $this->findOwnedItem($itemKey);
-        if (!$item) return;
+        if (! $item) {
+            return;
+        }
         $this->cartService->updateQuantity($item, $value);
         $this->refreshItems();
         $this->dispatch('cart-updated');
@@ -75,7 +81,9 @@ class CartComponent extends Component
     public function removeItem($itemKey): void
     {
         $item = $this->findOwnedItem($itemKey);
-        if (!$item) return;
+        if (! $item) {
+            return;
+        }
         $this->cartService->remove($item);
         $this->refreshItems();
         $this->dispatch('cart-updated');
@@ -87,16 +95,17 @@ class CartComponent extends Component
 
         // If itemKey starts with 'p_', it's a session cart item (product_id)
         if (is_string($itemKey) && str_starts_with($itemKey, 'p_')) {
-            $productId = (int)substr($itemKey, 2);
+            $productId = (int) substr($itemKey, 2);
             foreach ($items as $item) {
                 if ($item->product_id === $productId) {
                     return $item;
                 }
             }
+
             return null;
         }
 
-        $itemId = (int)$itemKey;
+        $itemId = (int) $itemKey;
         foreach ($items as $item) {
             if ($item->id === $itemId) {
                 return $item;

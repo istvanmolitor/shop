@@ -12,25 +12,29 @@ use Molitor\Order\Models\OrderPayment;
 use Molitor\Order\Models\OrderShipping;
 use Molitor\Order\Models\OrderStatus;
 use Molitor\Order\Repositories\OrderPaymentRepositoryInterface;
+use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
 use Molitor\Order\Services\ShippingHandler;
 use Molitor\Order\Services\ShippingType;
-use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
 
 class CheckoutService
 {
     const SESSION_KEY = 'checkout';
-    private int|null $shippingId = null;
+
+    private ?int $shippingId = null;
+
     private array $shippingData = [];
-    private int|null $paymentId = null;
+
+    private ?int $paymentId = null;
+
     private array $invoice = [];
+
     private bool $invoiceSameAsShipping = false;
 
     public function __construct(
         private CartService $cartService,
         private ShippingHandler $shippingHandler,
         private OrderShippingRepositoryInterface $shippingRepository
-    )
-    {
+    ) {
         $this->update();
     }
 
@@ -53,21 +57,21 @@ class CheckoutService
     public function update(): void
     {
         $checkout = $this->getCheckoutData();
-        $this->shippingId = isset($checkout['order_shipping_id']) ? (int)$checkout['order_shipping_id'] : null;
+        $this->shippingId = isset($checkout['order_shipping_id']) ? (int) $checkout['order_shipping_id'] : null;
         $this->shippingData = $checkout['shipping_data'] ?? [];
-        $this->paymentId = isset($checkout['order_payment_id']) ? (int)$checkout['order_payment_id'] : null;
+        $this->paymentId = isset($checkout['order_payment_id']) ? (int) $checkout['order_payment_id'] : null;
         $this->invoice = $checkout['invoice'] ?? [];
-        $this->invoiceSameAsShipping = (bool)($checkout['invoice_same_as_shipping'] ?? false);
+        $this->invoiceSameAsShipping = (bool) ($checkout['invoice_same_as_shipping'] ?? false);
     }
 
-    /*Cart************************************************/
+    /* Cart*********************************************** */
 
     public function isCartReady(): bool
     {
         return $this->cartService->count() > 0;
     }
 
-    /*Shipping************************************************/
+    /* Shipping*********************************************** */
 
     public function isShippingReady(): bool
     {
@@ -79,7 +83,7 @@ class CheckoutService
         $this->shippingId = $shippingId;
     }
 
-    public function getShippingId(): int|null
+    public function getShippingId(): ?int
     {
         return $this->shippingId;
     }
@@ -99,19 +103,20 @@ class CheckoutService
         return $this->shippingRepository->getAll();
     }
 
-    public function getOrderShipping(): OrderShipping|null
+    public function getOrderShipping(): ?OrderShipping
     {
-        if(!$this->shippingId) {
+        if (! $this->shippingId) {
             return null;
         }
+
         return $this->shippingRepository->getById($this->shippingId);
     }
 
-    public function getShippingType(): ShippingType|null
+    public function getShippingType(): ?ShippingType
     {
         $orderShipping = $this->getOrderShipping();
 
-        if (!$orderShipping || !$orderShipping->type) {
+        if (! $orderShipping || ! $orderShipping->type) {
             return null;
         }
 
@@ -125,14 +130,14 @@ class CheckoutService
         $this->save();
     }
 
-    /*Payment************************************************/
+    /* Payment*********************************************** */
 
     public function isPaymentReady(): bool
     {
         return $this->paymentId !== null;
     }
 
-    public function getPaymentId(): int|null
+    public function getPaymentId(): ?int
     {
         return $this->paymentId;
     }
@@ -142,13 +147,14 @@ class CheckoutService
         $this->paymentId = $paymentId;
     }
 
-    public function getOrderPayment(): OrderPayment|null
+    public function getOrderPayment(): ?OrderPayment
     {
-        if(!$this->paymentId) {
+        if (! $this->paymentId) {
             return null;
         }
         /** @var OrderPaymentRepositoryInterface $paymentRepository */
         $paymentRepository = app(OrderPaymentRepositoryInterface::class);
+
         return $paymentRepository->getById($this->paymentId);
     }
 
@@ -158,7 +164,7 @@ class CheckoutService
         $this->save();
     }
 
-    /*Invoice************************************************/
+    /* Invoice*********************************************** */
 
     public function isInvoiceReady(): bool
     {
@@ -195,7 +201,7 @@ class CheckoutService
     {
         $invoiceData = $this->getInvoice();
 
-        $address = new Address();
+        $address = new Address;
         $address->fill($invoiceData);
         $address->save();
 
@@ -206,34 +212,34 @@ class CheckoutService
 
     public function getShippingRoute(): string
     {
-        if($this->shippingId) {
+        if ($this->shippingId) {
             $shipping = $this->shippingRepository->getById($this->shippingId);
-            if($shipping) {
+            if ($shipping) {
                 return route('shop.checkout.shipping.show', $shipping);
             }
         }
+
         return route('shop.checkout.shipping');
     }
 
-    /*Finalize************************************************/
+    /* Finalize*********************************************** */
 
     public function isValid(): bool
     {
         return $this->isCartReady() && $this->isShippingReady() && $this->isPaymentReady() && $this->isInvoiceReady();
     }
 
-
-
     /**
      * Create order from checkout session data
      *
-     * @param string|null $comment Optional comment for the order
+     * @param  string|null  $comment  Optional comment for the order
      * @return Order The created order
+     *
      * @throws \Exception If order creation fails
      */
     public function store(?string $comment = null): Order
     {
-        if(!$this->isValid()) {
+        if (! $this->isValid()) {
             throw new \Exception('Invalid checkout data');
         }
 
@@ -244,7 +250,7 @@ class CheckoutService
 
         // Determine default status
         $status = OrderStatus::query()->where('code', 'ordered')->first();
-        if (!$status) {
+        if (! $status) {
             $status = OrderStatus::query()->firstOrFail();
         }
 

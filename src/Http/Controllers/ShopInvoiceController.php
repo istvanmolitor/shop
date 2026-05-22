@@ -4,10 +4,8 @@ namespace Molitor\Shop\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Address\Repositories\CountryRepositoryInterface;
 use Molitor\Shop\Http\Requests\InvoiceStepRequest;
 use Molitor\Shop\Services\CheckoutService;
@@ -23,7 +21,7 @@ class ShopInvoiceController extends BaseController
     {
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
-        if(!$checkoutService->isPaymentReady()) {
+        if (! $checkoutService->isPaymentReady()) {
             return Redirect::route('shop.checkout.payment');
         }
 
@@ -41,13 +39,13 @@ class ShopInvoiceController extends BaseController
     {
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
-        if(!$checkoutService->isPaymentReady()) {
+        if (! $checkoutService->isPaymentReady()) {
             return Redirect::route('shop.checkout.payment');
         }
 
         $data = $request->validated();
 
-        $invoiceSame = (bool)($data['invoice_same_as_shipping'] ?? false);
+        $invoiceSame = (bool) ($data['invoice_same_as_shipping'] ?? false);
 
         $checkoutService->setInvoice([
             'name' => $data['name'],
@@ -62,4 +60,3 @@ class ShopInvoiceController extends BaseController
         return Redirect::route('shop.checkout.finalize');
     }
 }
-

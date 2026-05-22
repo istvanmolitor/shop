@@ -10,6 +10,7 @@ use Molitor\Address\Repositories\CountryRepositoryInterface;
 use Molitor\Order\Repositories\OrderPaymentRepositoryInterface;
 use Molitor\Order\Repositories\OrderShippingRepositoryInterface;
 use Molitor\Shop\Http\Requests\CheckoutStoreRequest;
+use Molitor\Shop\Services\CartService;
 use Molitor\Shop\Services\CheckoutService;
 
 class ShopCheckoutController extends BaseController
@@ -24,7 +25,7 @@ class ShopCheckoutController extends BaseController
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
 
-        if(!$checkoutService->isValid()) {
+        if (! $checkoutService->isValid()) {
             return Redirect::route('shop.checkout.invoice');
         }
 
@@ -42,8 +43,8 @@ class ShopCheckoutController extends BaseController
         }
 
         // Get cart items and total
-        /** @var \Molitor\Shop\Services\CartService $cartService */
-        $cartService = app(\Molitor\Shop\Services\CartService::class);
+        /** @var CartService $cartService */
+        $cartService = app(CartService::class);
         $cartItems = $cartService->getItems();
         $cartTotal = $cartService->getTotal();
 
@@ -55,13 +56,13 @@ class ShopCheckoutController extends BaseController
             /** @var CountryRepositoryInterface $countryRepository */
             $countryRepository = app(CountryRepositoryInterface::class);
             $country = $countryRepository->getById($checkout['invoice']['country_id']);
-            $countryName = $country ? (string)$country : null;
+            $countryName = $country ? (string) $country : null;
         }
 
         return view('shop::checkout.finalize', [
             'data' => $checkout,
-            'paymentLabel' => (string)$checkoutService->getOrderPayment(),
-            'shippingLabel' => (string)$checkoutService->getOrderShipping(),
+            'paymentLabel' => (string) $checkoutService->getOrderPayment(),
+            'shippingLabel' => (string) $checkoutService->getOrderShipping(),
             'shippingTypeView' => $shippingTypeView,
             'cartItems' => $cartItems,
             'cartTotal' => $cartTotal,

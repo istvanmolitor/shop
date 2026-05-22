@@ -11,10 +11,13 @@ use Molitor\Product\Models\ProductField;
 class ProductsFilterComponent extends Component
 {
     public ?float $minPrice = null;
+
     public ?float $maxPrice = null;
+
     /**
      * Selected attribute option IDs grouped by field ID.
      * Example: [ fieldId => [optionId, ...] ]
+     *
      * @var array<int, array<int>>
      */
     public array $selectedOptions = [];
@@ -28,7 +31,7 @@ class ProductsFilterComponent extends Component
     {
         $current = $this->selectedOptions[$fieldId] ?? [];
         if (in_array($optionId, $current, true)) {
-            $current = array_values(array_filter($current, fn ($id) => (int)$id !== $optionId));
+            $current = array_values(array_filter($current, fn ($id) => (int) $id !== $optionId));
         } else {
             $current[] = $optionId;
         }
