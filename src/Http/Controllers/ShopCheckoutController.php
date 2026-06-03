@@ -70,10 +70,30 @@ class ShopCheckoutController extends BaseController
         ]);
     }
 
+    public function redirectToWizard(): RedirectResponse
+    {
+        /** @var CheckoutService $checkoutService */
+        $checkoutService = app(CheckoutService::class);
+
+        if (! $checkoutService->isCartReady()) {
+            return Redirect::route('shop.cart.index');
+        }
+
+        return Redirect::route('shop.checkout.shipping');
+    }
+
+    public function placeOrder(CheckoutStoreRequest $request): RedirectResponse
+    {
+        return $this->store($request);
+    }
+
     public function store(CheckoutStoreRequest $request): RedirectResponse
     {
         /** @var CheckoutService $checkoutService */
         $checkoutService = app(CheckoutService::class);
-        $checkoutService->store();
+        $order = $checkoutService->store($request->input('comment'));
+        $checkoutService->reset();
+
+        return Redirect::route('shop.orders.show', ['code' => $order->code]);
     }
 }

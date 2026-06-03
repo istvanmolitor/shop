@@ -64,6 +64,17 @@ class CheckoutService
         $this->invoiceSameAsShipping = (bool) ($checkout['invoice_same_as_shipping'] ?? false);
     }
 
+    public function reset(): void
+    {
+        $this->shippingId = null;
+        $this->shippingData = [];
+        $this->paymentId = null;
+        $this->invoice = [];
+        $this->invoiceSameAsShipping = false;
+
+        session()->forget(static::SESSION_KEY);
+    }
+
     /* Cart*********************************************** */
 
     public function isCartReady(): bool
