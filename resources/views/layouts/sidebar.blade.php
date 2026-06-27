@@ -1,1 +1,1 @@
-@extends('theme::layouts.sidebar-left')
+@extends('theme::layouts.left-sidebar')

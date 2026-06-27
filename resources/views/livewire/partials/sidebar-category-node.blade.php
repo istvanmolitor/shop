@@ -10,9 +10,9 @@
                     class="mr-1 inline-flex h-6 w-6 items-center justify-center rounded hover:bg-slate-100 text-slate-600"
                     aria-label="{{ $isOpen ? __('shop::common.categories.collapse') : __('shop::common.categories.expand') }}">
                 @if($isOpen)
-                    <x-theme:icon name="minus" class="h-4 w-4" />
+                    <x-theme::icon name="minus" class="h-4 w-4" />
                 @else
-                    <x-theme:icon name="plus" class="h-4 w-4" />
+                    <x-theme::icon name="plus" class="h-4 w-4" />
                 @endif
             </button>
         @else

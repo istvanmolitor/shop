@@ -17,7 +17,7 @@
                 class="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 no-underline"
                 title="{{ __('shop::common.products.show.edit_title') }}"
             >
-                <x-theme:icon name="pencil" class="w-5 h-5" />
+                <x-theme::icon name="pencil" class="w-5 h-5" />
             </a>
         @endcan
     </p>
@@ -36,7 +36,7 @@
                         <span>{{ $stock ?? 0 }} @if($product->productUnit){{ $product->productUnit->name }}@endif</span>
                         @if(!empty($inStock) && $inStock)
                             <span class="text-emerald-600" title="Raktáron">
-                                <x-theme:icon name="badge-check" class="w-5 h-5" />
+                                <x-theme::icon name="badge-check" class="w-5 h-5" />
                             </span>
                         @endif
                     </div>

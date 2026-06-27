@@ -5,7 +5,7 @@
     <button id="{{ $uid }}-button" type="button" class="inline-flex items-center justify-center rounded-md p-2 text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400" aria-controls="{{ $uid }}-panel" aria-expanded="false">
         <span class="sr-only">{{ __('shop::common.header_cart.open') }}</span>
         <span class="relative inline-block">
-            <x-theme:icon name="shopping-cart" class="w-8 h-8" />
+            <x-theme::icon name="shopping-cart" class="w-8 h-8" />
             @if($this->count > 0)
                 <span class="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-rose-600 text-white text-xs px-1.5 min-w-[1.25rem] h-5 leading-none">{{ $this->count }}</span>
             @endif

@@ -1,4 +1,4 @@
-@extends('theme::layouts.sidebar-left')
+@extends('theme::layouts.left-sidebar')
 
 @section('sidebar')
     @include('shop::layouts.includes.shop-sidebar')

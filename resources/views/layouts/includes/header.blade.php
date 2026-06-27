@@ -21,7 +21,7 @@
 
             <button id="mobile-menu-button" type="button" class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400" aria-controls="mobile-menu" aria-expanded="false">
                 <span class="sr-only">{{ __('shop::common.menu.mobile_open') }}</span>
-                <x-theme:icon name="bars-3" class="w-6 h-6" />
+                <x-theme::icon name="bars-3" class="w-6 h-6" />
             </button>
         </div>
 

@@ -13,10 +13,10 @@
                         aria-haspopup="menu"
                         x-bind:aria-expanded="open">
                     @if($menuItem->getIcon())
-                        <x-theme:icon :name="$menuItem->getIcon()" class="w-5 h-5" />
+                        <x-theme::icon :name="$menuItem->getIcon()" class="w-5 h-5" />
                     @endif
                     {{ $menuItem->getLabel() }}
-                    <x-theme:icon name="chevron-down" class="w-4 h-4" />
+                    <x-theme::icon name="chevron-down" class="w-4 h-4" />
                 </button>
 
                 <div x-cloak x-show="open" x-transition
@@ -29,7 +29,7 @@
                                     @csrf
                                     <button type="submit" class="w-full text-left px-4 py-2 text-slate-700 hover:bg-slate-50 inline-flex items-center gap-2" role="menuitem">
                                         @if($subMenuItem->getIcon())
-                                            <x-theme:icon :name="$subMenuItem->getIcon()" class="w-5 h-5" />
+                                            <x-theme::icon :name="$subMenuItem->getIcon()" class="w-5 h-5" />
                                         @endif
                                         {{ $subMenuItem->getLabel() }}
                                     </button>
@@ -37,7 +37,7 @@
                             @else
                                 <a href="{{ $subMenuItem->getUrl() }}" class="flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 {{ $subMenuItem->isActive() ? 'font-semibold' : '' }}" role="menuitem">
                                     @if($subMenuItem->getIcon())
-                                        <x-theme:icon :name="$subMenuItem->getIcon()" class="w-5 h-5" />
+                                        <x-theme::icon :name="$subMenuItem->getIcon()" class="w-5 h-5" />
                                     @endif
                                     {{ $subMenuItem->getLabel() }}
                                 </a>
@@ -52,7 +52,7 @@
                 @csrf
                 <button type="submit" class="text-slate-700 hover:text-slate-900 inline-flex items-center gap-1">
                     @if($menuItem->getIcon())
-                        <x-theme:icon :name="$menuItem->getIcon()" class="w-5 h-5" />
+                        <x-theme::icon :name="$menuItem->getIcon()" class="w-5 h-5" />
                     @endif
                     {{ $menuItem->getLabel() }}
                 </button>
@@ -62,7 +62,7 @@
             <a class="text-slate-700 hover:text-slate-900 {{ $menuItem->isActive() ? 'font-semibold' : '' }} inline-flex items-center gap-1"
                href="{{ $menuItem->getUrl() }}">
                 @if($menuItem->getIcon())
-                    <x-theme:icon :name="$menuItem->getIcon()" class="w-5 h-5" />
+                    <x-theme::icon :name="$menuItem->getIcon()" class="w-5 h-5" />
                 @endif
                 {{ $menuItem->getLabel() }}
             </a>

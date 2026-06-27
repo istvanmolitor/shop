@@ -14,7 +14,7 @@
 
     <button type="button" id="{{ $toggleId }}" class="inline-flex items-center justify-center rounded-md p-2 text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400" aria-controls="{{ $panelId }}" aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
         <span class="sr-only">{{ __('shop::common.search.open') }}</span>
-        <x-theme:icon name="search" class="h-5 w-5" />
+        <x-theme::icon name="search" class="h-5 w-5" />
     </button>
 </form>
 
