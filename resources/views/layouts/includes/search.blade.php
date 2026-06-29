@@ -2,12 +2,12 @@
     $searchId = uniqid('search-');
     $toggleId = $searchId.'-toggle';
     $panelId = $searchId.'-panel';
-    $isOpen = filled(request('q'));
+    $isOpen = filled(request('search'));
 @endphp
 
 <form method="get" action="{{ route('shop.products.index') }}" class="flex items-center justify-end gap-2 w-full" id="{{ $searchId }}">
     <div id="{{ $panelId }}" class="flex-1 items-center gap-2 {{ $isOpen ? 'flex' : 'hidden' }}">
-        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ __('shop::common.search.placeholder') }}"
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('shop::common.search.placeholder') }}"
                class="w-full rounded-md border border-slate-300 px-3 py-2" />
         <button type="submit" class="rounded-md bg-slate-900 text-white px-3 py-2">{{ __('shop::common.search.submit') }}</button>
     </div>
@@ -26,7 +26,7 @@
         const panel = document.getElementById(@json($panelId));
         if(!btn || !panel) return;
         function closePanel(){ panel.classList.remove('flex'); panel.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); }
-        function openPanel(){ panel.classList.remove('hidden'); panel.classList.add('flex'); btn.setAttribute('aria-expanded','true'); const input = panel.querySelector('input[name="q"]'); if(input){ setTimeout(()=>input.focus(), 0); } }
+        function openPanel(){ panel.classList.remove('hidden'); panel.classList.add('flex'); btn.setAttribute('aria-expanded','true'); const input = panel.querySelector('input[name="search"]'); if(input){ setTimeout(()=>input.focus(), 0); } }
         btn.addEventListener('click', function(){
             const isHidden = panel.classList.contains('hidden');
             if(isHidden){ openPanel(); } else { closePanel(); }
